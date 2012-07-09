@@ -223,74 +223,6 @@ Demo = (function() {
         }
     },
 
-    Demo.prototype.start = function() {
-
-        // Bind all methods to this scope.
-        this._bindAll();
-
-        // Initialise properties.
-        this.currentTime = +new Date();
-        this.previousTime = this.currentTime;
-
-        this.mouseX = 0.0;
-        this.mouseY = 0.0;
-        this.oMouseX = 0.0;
-        this.oMouseY = 0.0;
-
-        // Create container.
-        this.domElement = document.createElement( 'div' );
-        this.container.appendChild( this.domElement );
-
-        // Create rendering context.
-        switch( this.type ) {
-
-            case Demo.CANVAS:
-
-                if ( !!window.CanvasRenderingContext2D ) {
-
-                    this.canvas = document.createElement( 'canvas' );
-                    this.ctx = this.canvas.getContext( '2d' );
-                    this.domElement.appendChild( this.canvas );
-
-                } else {
-
-                    throw new Error( 'CanvasRenderingContext2D not supported' );
-                }
-
-                break;
-        }
-
-        // Bind event handlers.
-        addEvent( this.domElement, 'click', this._onClick );
-        addEvent( this.domElement, 'mousemove', this._onMouseMove );
-        addEvent( window, 'keydown', this._onKeyDown );
-        addEvent( window, 'keyup', this._onKeyUp );
-        addEvent( window, 'resize', this._onResize );
-
-        // Add stats.
-        if ( this.stats ) {
-
-            if ( typeof Stats === 'function' ) {
-
-                this._initStats();
-
-            } else {
-
-                var script = document.createElement( 'script' );
-                script.setAttribute( 'type', 'text/javascript' );
-                script.setAttribute( 'src', 'https://raw.github.com/mrdoob/stats.js/d5f5aa40a24a6d5667ecbcef20c13c75cf236bcd/build/Stats.js' );
-                script.onload = this.onreadystatechange = this._initStats;
-
-                document.body.appendChild( script );
-            }
-        }
-
-        // Initialise.
-        this._onResize();
-        this.setup();
-        this._update( this.currentTime );
-    },
-
     Demo.prototype._update = function( time ) {
 
         if ( this._stats ) {
@@ -384,6 +316,82 @@ Demo = (function() {
 
         this.key = null;
         this.keyup( event );
+    },
+
+    /**
+     * --------------------------------------------------
+     *
+     *  Public API
+     *
+     * --------------------------------------------------
+     */
+
+    Demo.prototype.start = function() {
+
+        // Bind all methods to this scope.
+        this._bindAll();
+
+        // Initialise properties.
+        this.currentTime = +new Date();
+        this.previousTime = this.currentTime;
+
+        this.mouseX = 0.0;
+        this.mouseY = 0.0;
+        this.oMouseX = 0.0;
+        this.oMouseY = 0.0;
+
+        // Create container.
+        this.domElement = document.createElement( 'div' );
+        this.container.appendChild( this.domElement );
+
+        // Create rendering context.
+        switch( this.type ) {
+
+            case Demo.CANVAS:
+
+                if ( !!window.CanvasRenderingContext2D ) {
+
+                    this.canvas = document.createElement( 'canvas' );
+                    this.ctx = this.canvas.getContext( '2d' );
+                    this.domElement.appendChild( this.canvas );
+
+                } else {
+
+                    throw new Error( 'CanvasRenderingContext2D not supported' );
+                }
+
+                break;
+        }
+
+        // Bind event handlers.
+        addEvent( this.domElement, 'click', this._onClick );
+        addEvent( this.domElement, 'mousemove', this._onMouseMove );
+        addEvent( window, 'keydown', this._onKeyDown );
+        addEvent( window, 'keyup', this._onKeyUp );
+        addEvent( window, 'resize', this._onResize );
+
+        // Add stats.
+        if ( this.stats ) {
+
+            if ( typeof Stats === 'function' ) {
+
+                this._initStats();
+
+            } else {
+
+                var script = document.createElement( 'script' );
+                script.setAttribute( 'type', 'text/javascript' );
+                script.setAttribute( 'src', 'https://raw.github.com/mrdoob/stats.js/d5f5aa40a24a6d5667ecbcef20c13c75cf236bcd/build/Stats.js' );
+                script.onload = this.onreadystatechange = this._initStats;
+
+                document.body.appendChild( script );
+            }
+        }
+
+        // Initialise.
+        this._onResize();
+        this.setup();
+        this._update( this.currentTime );
     },
 
     Demo.prototype.clear = function() {
