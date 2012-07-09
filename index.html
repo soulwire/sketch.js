@@ -1,0 +1,56 @@
+<html>
+	<head>
+		<title>Demo</title>
+		<style type="text/css">
+			html, body {
+				margin: 0;
+			}
+		</style>
+	</head>
+	<body>
+		<script type="text/javascript" src="js/demo.js"></script>
+		<script type="text/javascript">
+
+			new Demo({
+
+				type: Demo.CANVAS,
+				fullscreen: true,
+
+				setup: function() {
+					console.log( this, 'setup' );
+
+
+				},
+
+				draw: function( ctx, dt ) {
+
+					ctx.moveTo( this.oMouseX, this.oMouseY );
+					ctx.lineTo( this.mouseX, this.mouseY );
+					ctx.stroke();
+				},
+
+				mousedown: function( event ) {
+					console.log( 'click', event );
+				},
+
+				mousemove: function( event ) {
+
+					this.ctx.strokeStyle = '#222';
+					this.ctx.lineWidth = 8;
+					this.ctx.lineJoin = 'round';
+					this.ctx.lineCap = 'round';
+
+					this.ctx.beginPath();
+					this.ctx.moveTo( this.oMouseX, this.oMouseY );
+					this.ctx.lineTo( this.mouseX, this.mouseY );
+					this.ctx.stroke();
+				},
+
+				keydown: function( key ) {
+					console.log( 'keydown', key );
+				}
+			});
+
+		</script>
+	</body>
+</html>
