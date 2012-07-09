@@ -3,53 +3,139 @@
 		<title>Demo</title>
 		<style type="text/css">
 			html, body {
+				background: #2b2b2b;
 				margin: 0;
 			}
 		</style>
 	</head>
 	<body>
+		<div id="container"></div>
 		<script type="text/javascript" src="js/demo.js"></script>
 		<script type="text/javascript">
 
-			new Demo({
+			var Particle, demo;
 
-				type: Demo.CANVAS,
-				fullscreen: true,
+			(function() {
 
-				setup: function() {
-					console.log( this, 'setup' );
+				Particle = function( x, y, radius ) {
 
+					this.alive = true;
+					this.radius = radius || 10;
+					this.theta = Math.random() * Math.PI * 2;
+					this.wander = 0.15;
+					this.drag = 0.92;
+					this.color = '#fff';
 
-				},
+					this.x = x || 0.0;
+					this.y = y || 0.0;
 
-				draw: function( ctx, dt ) {
-
-					ctx.moveTo( this.oMouseX, this.oMouseY );
-					ctx.lineTo( this.mouseX, this.mouseY );
-					ctx.stroke();
-				},
-
-				mousedown: function( event ) {
-					console.log( 'click', event );
-				},
-
-				mousemove: function( event ) {
-
-					this.ctx.strokeStyle = '#222';
-					this.ctx.lineWidth = 8;
-					this.ctx.lineJoin = 'round';
-					this.ctx.lineCap = 'round';
-
-					this.ctx.beginPath();
-					this.ctx.moveTo( this.oMouseX, this.oMouseY );
-					this.ctx.lineTo( this.mouseX, this.mouseY );
-					this.ctx.stroke();
-				},
-
-				keydown: function( key ) {
-					console.log( 'keydown', key );
+					this.vx = 0.0;
+					this.vy = 0.0;
 				}
-			});
+
+				Particle.prototype = {
+
+					move: function( dt ) {
+
+						this.x += this.vx;
+						this.y += this.vy;
+
+						this.vx *= this.drag;
+						this.vy *= this.drag;
+
+						this.theta += (Math.random() - 0.5) * this.wander;
+						this.vx += Math.sin( this.theta ) * 0.1;
+						this.vy += Math.cos( this.theta ) * 0.1;
+
+						this.radius *= 0.96;
+						this.alive = this.radius > 0.5;
+					},
+
+					draw: function( ctx ) {
+
+						ctx.beginPath();
+						ctx.arc( this.x, this.y, this.radius, 0, Math.PI * 2 );
+						ctx.fillStyle = this.color;
+						ctx.fill();
+					}
+				};
+
+				/**
+				 * Demo
+				 */
+
+				demo = new Demo({
+
+					MAX_PARTICLES: 200,
+					COLOURS: [ '#69D2E7', '#A7DBD8', '#E0E4CC', '#F38630', '#FA6900', '#FF4E50', '#F9D423' ],
+
+					type: Demo.CANVAS,
+					container: document.getElementById( 'container' ),
+					autostart: false,
+					stats: true,
+
+					setup: function() {
+
+						this.particles = [];
+					},
+
+					draw: function( ctx, dt ) {
+
+						var i, particle;
+
+						this.ctx.globalCompositeOperation  = 'lighter';
+
+						for ( i = this.particles.length - 1; i >= 0; i-- ) {
+
+							particle = this.particles[i];
+
+							if ( particle.alive ) {
+
+								particle.move( dt );
+								particle.draw( ctx );
+
+							} else {
+
+								this.particles.splice( i, 1 );
+								particle = null;
+							}
+						};
+					},
+
+					mousemove: function() {
+
+						if ( this.particles.length < this.MAX_PARTICLES ) {
+
+							var particle, theta, force, max = Math.random() * 8, i = 0;
+
+							while ( this.particles.length < this.MAX_PARTICLES && i++ < max ) {
+
+								theta = random( TWO_PI );
+								force = random( 2, 8 );
+								radius = random( 5, 40 );
+
+								particle = new Particle( this.mouseX, this.mouseY, radius );
+
+								particle.wander = random( 0.5, 2.0 );
+								particle.color = random( this.COLOURS );
+								particle.drag = random( 0.9, 0.99 );
+								particle.vx = sin( theta ) * force;
+								particle.vy = cos( theta ) * force;
+
+								this.particles.push( particle );
+							}
+						}
+					},
+
+					keydown: function() {
+						console.log( 'key pressed: ' + this.key );
+					}
+				});
+
+				// Can also just autostart by default.
+				demo.start();
+
+			})();
 
 		</script>
 	</body>
