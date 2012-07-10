@@ -337,7 +337,7 @@ Sketch = (function() {
 
         this.key = event.keyCode;
         this.ALT = event.altKey;
-        this.CTRL = event.ctrlKey;
+        this.CTRL = event.ctrlKey || event.metaKey;
         this.SHIFT = event.shiftKey;
 
         this.keydown( event );
@@ -373,6 +373,10 @@ Sketch = (function() {
         this.oMouseX = 0.0;
         this.oMouseY = 0.0;
         this.touches = [];
+
+        this.ALT = false;
+        this.CTRL = false;
+        this.SHIFT = false;
 
         // Create container.
         this.domElement = document.createElement( 'div' );
