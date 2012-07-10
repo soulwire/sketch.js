@@ -2,16 +2,15 @@
 /**
  * --------------------------------------------------
  *
- *  A simple demo base class.
- *
- *  TODO: Handle touch events transparently.
+ *  A simple base for JavaScript creative coding
+ *  experiments or sketches...
  *
  * --------------------------------------------------
  */
 
-var Demo;
+var Sketch;
 
-Demo = (function() {
+Sketch = (function() {
 
     /**
      * --------------------------------------------------
@@ -125,12 +124,12 @@ Demo = (function() {
     /**
      * --------------------------------------------------
      *
-     *  Demo
+     *  Sketch
      *
      * --------------------------------------------------
      */
 
-    function Demo( options ) {
+    function Sketch( options ) {
 
         // Provide some useful global properties & methods.
         this._extend( window, this._globals );
@@ -144,9 +143,9 @@ Demo = (function() {
         }
     }
 
-    Demo.CANVAS = 'canvas';
+    Sketch.CANVAS = 'canvas';
 
-    Demo.prototype._globals = {
+    Sketch.prototype._globals = {
 
         PI: Math.PI,
         TWO_PI: Math.PI * 2,
@@ -183,9 +182,9 @@ Demo = (function() {
         }
     };
 
-    Demo.prototype._defaults = {
+    Sketch.prototype._defaults = {
 
-        type        : Demo.CANVAS,
+        type        : Sketch.CANVAS,
         fullscreen  : true,
         autoclear   : true,
         autostart   : true,
@@ -200,7 +199,7 @@ Demo = (function() {
         keyup       : function( event ) {}
     };
 
-    Demo.prototype._extend = function( child, parent ) {
+    Sketch.prototype._extend = function( child, parent ) {
 
         for ( var prop in parent ) {
             if ( !child.hasOwnProperty( prop ) && parent.hasOwnProperty( prop ) ) {
@@ -211,7 +210,7 @@ Demo = (function() {
         return child;
     },
 
-    Demo.prototype._bindAll = function( target, scope ) {
+    Sketch.prototype._bindAll = function( target, scope ) {
 
         target = target || this;
         scope = scope || this;
@@ -223,7 +222,7 @@ Demo = (function() {
         }
     },
 
-    Demo.prototype._update = function( time ) {
+    Sketch.prototype._update = function( time ) {
 
         if ( this._stats ) {
             this._stats.begin();
@@ -245,7 +244,7 @@ Demo = (function() {
         }
     };
 
-    Demo.prototype._initStats = function() {
+    Sketch.prototype._initStats = function() {
 
         if ( typeof Stats === 'function' ) {
 
@@ -261,7 +260,7 @@ Demo = (function() {
         }
     };
 
-    Demo.prototype._onResize = function( event ) {
+    Sketch.prototype._onResize = function( event ) {
 
         if ( this.fullscreen ) {
 
@@ -276,7 +275,7 @@ Demo = (function() {
 
         switch ( this.type ) {
 
-            case Demo.CANVAS:
+            case Sketch.CANVAS:
 
                 this.canvas.width = this.width;
                 this.canvas.height = this.height;
@@ -290,12 +289,12 @@ Demo = (function() {
         this.resize( this.width, this.height );
     },
 
-    Demo.prototype._onClick = function( event ) {
+    Sketch.prototype._onClick = function( event ) {
 
         this.click( event );
     };
 
-    Demo.prototype._onMouseMove = function( event ) {
+    Sketch.prototype._onMouseMove = function( event ) {
 
         this.oMouseX = this.mouseX;
         this.oMouseY = this.mouseY;
@@ -306,13 +305,13 @@ Demo = (function() {
         this.mousemove( event );
     };
 
-    Demo.prototype._onKeyDown = function( event ) {
+    Sketch.prototype._onKeyDown = function( event ) {
 
         this.key = event.keyCode;
         this.keydown( event );
     },
 
-    Demo.prototype._onKeyUp = function( event ) {
+    Sketch.prototype._onKeyUp = function( event ) {
 
         this.key = null;
         this.keyup( event );
@@ -326,7 +325,7 @@ Demo = (function() {
      * --------------------------------------------------
      */
 
-    Demo.prototype.start = function() {
+    Sketch.prototype.start = function() {
 
         // Bind all methods to this scope.
         this._bindAll();
@@ -347,7 +346,7 @@ Demo = (function() {
         // Create rendering context.
         switch( this.type ) {
 
-            case Demo.CANVAS:
+            case Sketch.CANVAS:
 
                 if ( !!window.CanvasRenderingContext2D ) {
 
@@ -394,11 +393,11 @@ Demo = (function() {
         this._update( this.currentTime );
     },
 
-    Demo.prototype.clear = function() {
+    Sketch.prototype.clear = function() {
 
         switch ( this.type ) {
 
-            case Demo.CANVAS:
+            case Sketch.CANVAS:
 
                 this.canvas.width = this.canvas.width;
 
@@ -406,6 +405,6 @@ Demo = (function() {
         }
     };
 
-    return Demo;
+    return Sketch;
 
 })();

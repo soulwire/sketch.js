@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>Demo</title>
+		<title>Sketch</title>
 		<style type="text/css">
 			html, body {
 				background: #2b2b2b;
@@ -10,14 +10,12 @@
 	</head>
 	<body>
 		<div id="container"></div>
-		<script type="text/javascript" src="js/demo.js"></script>
+		<script type="text/javascript" src="js/sketch.js"></script>
 		<script type="text/javascript">
-
-			var Particle, demo;
 
 			(function() {
 
-				Particle = function( x, y, radius ) {
+				function Particle( x, y, radius ) {
 
 					this.alive = true;
 					this.radius = radius || 10;
@@ -61,18 +59,23 @@
 				};
 
 				/**
-				 * Demo
+				 * Sketch
 				 */
 
-				demo = new Demo({
+				new Sketch({
 
-					MAX_PARTICLES: 200,
+					// Config
+
+					MAX_PARTICLES: 220,
 					COLOURS: [ '#69D2E7', '#A7DBD8', '#E0E4CC', '#F38630', '#FA6900', '#FF4E50', '#F9D423' ],
 
-					type: Demo.CANVAS,
+					// Settings
+
 					container: document.getElementById( 'container' ),
-					autostart: false,
+					type: Sketch.CANVAS,
 					stats: true,
+
+					// Methods
 
 					setup: function() {
 
@@ -131,9 +134,6 @@
 						console.log( 'key pressed: ' + this.key );
 					}
 				});
-
-				// Can also just autostart by default.
-				demo.start();
 
 			})();
 
