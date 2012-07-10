@@ -14,22 +14,27 @@
 		<script type="text/javascript">
 
 				function Particle( x, y, radius ) {
-
-					this.alive = true;
-					this.radius = radius || 10;
-					this.theta = Math.random() * Math.PI * 2;
-					this.wander = 0.15;
-					this.drag = 0.92;
-					this.color = '#fff';
-
-					this.x = x || 0.0;
-					this.y = y || 0.0;
-
-					this.vx = 0.0;
-					this.vy = 0.0;
+					this.init( x, y, radius );
 				}
 
 				Particle.prototype = {
+
+					init: function( x, y, radius ) {
+
+						this.alive = true;
+
+						this.radius = radius || 10;
+						this.wander = 0.15;
+						this.theta = random( TWO_PI );
+						this.drag = 0.92;
+						this.color = '#fff';
+
+						this.x = x || 0.0;
+						this.y = y || 0.0;
+
+						this.vx = 0.0;
+						this.vy = 0.0;
+					},
 
 					move: function( dt ) {
 
@@ -39,9 +44,9 @@
 						this.vx *= this.drag;
 						this.vy *= this.drag;
 
-						this.theta += (Math.random() - 0.5) * this.wander;
-						this.vx += Math.sin( this.theta ) * 0.1;
-						this.vy += Math.cos( this.theta ) * 0.1;
+						this.theta += random( -0.5, 0.5 ) * this.wander;
+						this.vx += sin( this.theta ) * 0.1;
+						this.vy += cos( this.theta ) * 0.1;
 
 						this.radius *= 0.96;
 						this.alive = this.radius > 0.5;
@@ -50,7 +55,7 @@
 					draw: function( ctx ) {
 
 						ctx.beginPath();
-						ctx.arc( this.x, this.y, this.radius, 0, Math.PI * 2 );
+						ctx.arc( this.x, this.y, this.radius, 0, TWO_PI );
 						ctx.fillStyle = this.color;
 						ctx.fill();
 					}
@@ -82,6 +87,7 @@
 					setup: function() {
 
 						this.particles = [];
+						this.pool = [];
 					},
 
 					draw: function( ctx, dt ) {
@@ -102,7 +108,7 @@
 							} else {
 
 								this.particles.splice( i, 1 );
-								particle = null;
+								this.pool.push( particle );
 							}
 						};
 					},
@@ -115,15 +121,16 @@
 
 							while ( this.particles.length < this.MAX_PARTICLES && i++ < max ) {
 
-								theta = random( TWO_PI );
-								force = random( 2, 8 );
-								radius = random( 5, 40 );
-
-								particle = new Particle( this.mouseX, this.mouseY, radius );
+								particle = this.pool.length ? this.pool.pop() : new Particle();
+								particle.init( this.mouseX, this.mouseY, random( 5, 40 ) );
 
 								particle.wander = random( 0.5, 2.0 );
 								particle.color = random( this.COLOURS );
 								particle.drag = random( 0.9, 0.99 );
+
+								theta = random( TWO_PI );
+								force = random( 2, 8 );
+
 								particle.vx = sin( theta ) * force;
 								particle.vy = cos( theta ) * force;
 
