@@ -193,6 +193,8 @@ Sketch = (function() {
         setup       : function() {},
         draw        : function( ctx, dt ) {},
         resize      : function( width, height ) {},
+        touchstart  : function( event ) {},
+        touchmove   : function( event ) {},
         mousemove   : function( event ) {},
         click       : function( event ) {},
         keydown     : function( event ) {},
@@ -259,6 +261,23 @@ Sketch = (function() {
         }
     };
 
+    Sketch.prototype._setMouse = function( x, y ) {
+
+        this.oMouseX = this.mouseX;
+        this.oMouseY = this.mouseY;
+
+        this.mouseX = x;
+        this.mouseY = y;
+    };
+
+    /**
+     * --------------------------------------------------
+     *
+     *  Event Handlers
+     *
+     * --------------------------------------------------
+     */
+
     Sketch.prototype._onResize = function( event ) {
 
         if ( this.fullscreen ) {
@@ -288,6 +307,9 @@ Sketch = (function() {
         this.resize( this.width, this.height );
     },
 
+    Sketch.prototype._onTouchStart = function( event ) {
+    };
+
     Sketch.prototype._onClick = function( event ) {
 
         this.click( event );
@@ -295,24 +317,37 @@ Sketch = (function() {
 
     Sketch.prototype._onMouseMove = function( event ) {
 
-        this.oMouseX = this.mouseX;
-        this.oMouseY = this.mouseY;
+        this._setMouse( event.clientX, event.clientY );
+        this.mousemove( event );
+    };
 
-        this.mouseX = event.clientX;
-        this.mouseY = event.clientY;
+    Sketch.prototype._onTouchMove = function( event ) {
 
+        event.preventDefault();
+
+        this.touches = event.touches;
+        var touch = this.touches[0];
+
+        this._setMouse( touch.pageX, touch.pageY );
+        this.touchmove( event );
         this.mousemove( event );
     };
 
     Sketch.prototype._onKeyDown = function( event ) {
 
         this.key = event.keyCode;
+        this.ALT = event.altKey;
+        this.CTRL = event.ctrlKey;
+        this.SHIFT = event.shiftKey;
+
         this.keydown( event );
     },
 
     Sketch.prototype._onKeyUp = function( event ) {
 
         this.key = null;
+        this.ALT = this.CTRL = this.SHIFT = false;
+
         this.keyup( event );
     },
 
@@ -337,6 +372,7 @@ Sketch = (function() {
         this.mouseY = 0.0;
         this.oMouseX = 0.0;
         this.oMouseY = 0.0;
+        this.touches = [];
 
         // Create container.
         this.domElement = document.createElement( 'div' );
@@ -364,6 +400,8 @@ Sketch = (function() {
         // Bind event handlers.
         addEvent( this.domElement, 'click', this._onClick );
         addEvent( this.domElement, 'mousemove', this._onMouseMove );
+        addEvent( this.domElement, 'touchstart', this._onTouchStart );
+        addEvent( this.domElement, 'touchmove', this._onTouchMove );
         addEvent( window, 'keydown', this._onKeyDown );
         addEvent( window, 'keyup', this._onKeyUp );
         addEvent( window, 'resize', this._onResize );
