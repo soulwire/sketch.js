@@ -251,7 +251,6 @@ Sketch = (function() {
             this._stats = new Stats();
             this._stats.setMode(0);
 
-            // Align top-left
             this._stats.domElement.style.position = 'absolute';
             this._stats.domElement.style.right = '10px';
             this._stats.domElement.style.top = '10px';
