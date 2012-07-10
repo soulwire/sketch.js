@@ -13,8 +13,6 @@
 		<script type="text/javascript" src="js/sketch.js"></script>
 		<script type="text/javascript">
 
-			(function() {
-
 				function Particle( x, y, radius ) {
 
 					this.alive = true;
@@ -59,10 +57,14 @@
 				};
 
 				/**
-				 * Sketch
+				 * --------------------------------------------------
+				 *
+				 *  Example Sketch
+				 *
+				 * --------------------------------------------------
 				 */
 
-				new Sketch({
+				var example = new Sketch({
 
 					// Config
 
@@ -134,8 +136,6 @@
 						console.log( 'key pressed: ' + this.key );
 					}
 				});
-
-			})();
 
 		</script>
 	</body>
