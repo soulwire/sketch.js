@@ -30,43 +30,46 @@ Sketch = (function() {
 
         var lastTime = 0;
         var vendors = ['ms', 'moz', 'webkit', 'o'];
-        for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+
+        for( var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x ) {
             window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
             window.cancelAnimationFrame = window[vendors[x]+'CancelAnimationFrame'] || window[vendors[x]+'CancelRequestAnimationFrame'];
         }
 
-        if (!window.requestAnimationFrame)
-            window.requestAnimationFrame = function(callback, element) {
+        if ( !window.requestAnimationFrame )
+            window.requestAnimationFrame = function( callback, element ) {
                 var currTime = new Date().getTime();
                 var timeToCall = Math.max(0, 16 - (currTime - lastTime));
-                var id = window.setTimeout(function() { callback(currTime + timeToCall); }, timeToCall);
+                var id = window.setTimeout( function() { callback( currTime + timeToCall ); }, timeToCall );
                 lastTime = currTime + timeToCall;
                 return id;
             };
 
-        if (!window.cancelAnimationFrame)
-            window.cancelAnimationFrame = function(id) {
-                clearTimeout(id);
+        if ( !window.cancelAnimationFrame )
+            window.cancelAnimationFrame = function( id ) {
+                clearTimeout( id );
             };
     }());
 
     // Function.prototype.bind polyfill
     // @see https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Function/bind
 
-    if (!Function.prototype.bind) {
-        Function.prototype.bind = function (obj) {
+    if ( !Function.prototype.bind ) {
+
+        Function.prototype.bind = function ( obj ) {
+
             // closest thing possible to the ECMAScript 5 internal IsCallable function
             if (typeof this !== 'function') {
-                throw new TypeError('Function.prototype.bind - what is trying to be bound is not callable');
+                throw new TypeError( 'Function.prototype.bind - what is trying to be bound is not callable' );
             }
 
             var slice = [].slice,
-                args = slice.call(arguments, 1),
+                args = slice.call( arguments, 1 ),
                 self = this,
                 nop = function () { },
                 bound = function () {
-                    return self.apply(this instanceof nop ? this : (obj || {}),
-                                      args.concat(slice.call(arguments)));
+                    return self.apply( this instanceof nop ? this : (obj || {} ),
+                                      args.concat( slice.call( arguments ) ) );
                 };
 
             bound.prototype = this.prototype;
@@ -74,52 +77,6 @@ Sketch = (function() {
             return bound;
         };
     }
-
-    // add / remove event listener
-
-    var addEvent = (function () {
-
-        if (window.addEventListener) {
-
-            return function (el, ev, fn) {
-                el.addEventListener(ev, fn, false);
-            };
-
-        } else if (window.attachEvent) {
-
-            return function (el, ev, fn) {
-                el.attachEvent('on' + ev, fn);
-            };
-
-        } else {
-
-            return function (el, ev, fn) {
-                el['on' + ev] =  fn;
-            };
-        }
-    }());
-
-    var removeEvent = (function () {
-
-        if (window.removeEventListener) {
-
-            return function (el, ev, fn) {
-                el.removeEventListener(ev, fn, false);
-            };
-
-        } else if (window.detachEvent) {
-
-            return function (el, ev, fn) {
-                el.detachEvent('on' + ev, fn);
-            };
-
-        } else {
-
-            return function (el, ev, fn) {
-                el['on' + ev] =  null;
-            };
-        }
-    }());
 
     /**
      * --------------------------------------------------
@@ -157,26 +114,26 @@ Sketch = (function() {
 
         _globals: {
 
-            PI: Math.PI,
-            TWO_PI: Math.PI * 2,
-            HALF_PI: Math.PI / 2,
-            QUATER_PI: Math.PI / 4,
+            PI         : Math.PI,
+            TWO_PI     : Math.PI * 2,
+            HALF_PI    : Math.PI / 2,
+            QUATER_PI  : Math.PI / 4,
 
-            sin: Math.sin,
-            cos: Math.cos,
-            tan: Math.tan,
-            pow: Math.pow,
-            exp: Math.exp,
-            min: Math.min,
-            max: Math.max,
-            sqrt: Math.sqrt,
-            atan: Math.atan,
-            atan2: Math.atan2,
-            ceil: Math.ceil,
-            round: Math.round,
-            floor: Math.floor,
+            sin        : Math.sin,
+            cos        : Math.cos,
+            tan        : Math.tan,
+            pow        : Math.pow,
+            exp        : Math.exp,
+            min        : Math.min,
+            max        : Math.max,
+            sqrt       : Math.sqrt,
+            atan       : Math.atan,
+            atan2      : Math.atan2,
+            ceil       : Math.ceil,
+            round      : Math.round,
+            floor      : Math.floor,
 
-            random: function( min, max ) {
+            random     : function( min, max ) {
 
                 // Allow for random string / array access.
                 if ( min && typeof min.length === 'number' && !!min.length ) {
@@ -184,8 +141,7 @@ Sketch = (function() {
                 }
 
                 if ( typeof max !== 'number' ) {
-                    max = min || 1.0;
-                    min = 0;
+                    max = min || 1.0, min = 0;
                 }
 
                 return min + Math.random() * (max - min);
@@ -262,13 +218,13 @@ Sketch = (function() {
             }
 
             // Bind event handlers.
-            addEvent( this.domElement, 'click', this._onClick );
-            addEvent( this.domElement, 'mousemove', this._onMouseMove );
-            addEvent( this.domElement, 'touchstart', this._onTouchStart );
-            addEvent( this.domElement, 'touchmove', this._onTouchMove );
-            addEvent( window, 'keydown', this._onKeyDown );
-            addEvent( window, 'keyup', this._onKeyUp );
-            addEvent( window, 'resize', this._onResize );
+            this._addEvent( this.domElement, 'click', this._onClick );
+            this._addEvent( this.domElement, 'mousemove', this._onMouseMove );
+            this._addEvent( this.domElement, 'touchstart', this._onTouchStart );
+            this._addEvent( this.domElement, 'touchmove', this._onTouchMove );
+            this._addEvent( window, 'keydown', this._onKeyDown );
+            this._addEvent( window, 'keyup', this._onKeyUp );
+            this._addEvent( window, 'resize', this._onResize );
 
             // Add stats.
             if ( this.stats ) {
@@ -306,6 +262,18 @@ Sketch = (function() {
             }
         },
 
+        destroy: function() {
+
+            // Unbind event handlers.
+            this._removeEvent( this.domElement, 'click', this._onClick );
+            this._removeEvent( this.domElement, 'mousemove', this._onMouseMove );
+            this._removeEvent( this.domElement, 'touchstart', this._onTouchStart );
+            this._removeEvent( this.domElement, 'touchmove', this._onTouchMove );
+            this._removeEvent( window, 'keydown', this._onKeyDown );
+            this._removeEvent( window, 'keyup', this._onKeyUp );
+            this._removeEvent( window, 'resize', this._onResize );
+        },
+
         /**
          * --------------------------------------------------
          *
@@ -337,25 +305,35 @@ Sketch = (function() {
             }
         },
 
-        _update: function( time ) {
+        _addEvent: function( el, ev, fn ) {
 
-            if ( this._stats ) {
-                this._stats.begin();
+            if ( window.addEventListener ) {
+
+                el.addEventListener( ev, fn, false );
+
+            } else if ( window.attachEvent ) {
+
+                el.attachEvent( 'on' + ev, fn );
+
+            } else {
+
+                el[ 'on' + ev ] =  fn;
             }
+        },
 
-            this.previousTime = this.currentTime;
-            this.currentTime = time;
+        _removeEvent: function() {
 
-            if ( this.autoclear ) {
-                this.clear();
-            }
+            if ( window.removeEventListener ) {
 
-            this.draw( this.ctx, this.currentTime - this.previousTime );
+                el.removeEventListener( ev, fn, false );
 
-            requestAnimationFrame( this._update );
+            } else if ( window.detachEvent ) {
 
-            if ( this._stats ) {
-                this._stats.end();
+                el.detachEvent( 'on' + ev, fn );
+
+            } else {
+
+                el[ 'on' + ev ] =  null;
             }
         },
 
@@ -381,6 +359,28 @@ Sketch = (function() {
 
             this.mouseX = x;
             this.mouseY = y;
+        },
+
+        _update: function( time ) {
+
+            if ( this._stats ) {
+                this._stats.begin();
+            }
+
+            this.previousTime = this.currentTime;
+            this.currentTime = time;
+
+            if ( this.autoclear ) {
+                this.clear();
+            }
+
+            this.draw( this.ctx, this.currentTime - this.previousTime );
+
+            requestAnimationFrame( this._update );
+
+            if ( this._stats ) {
+                this._stats.end();
+            }
         },
 
         /**
