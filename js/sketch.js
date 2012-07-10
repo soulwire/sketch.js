@@ -145,304 +145,323 @@ Sketch = (function() {
 
     Sketch.CANVAS = 'canvas';
 
-    Sketch.prototype._globals = {
+    Sketch.prototype = {
 
-        PI: Math.PI,
-        TWO_PI: Math.PI * 2,
-        HALF_PI: Math.PI / 2,
-        QUATER_PI: Math.PI / 4,
+        /**
+         * --------------------------------------------------
+         *
+         *  Config
+         *
+         * --------------------------------------------------
+         */
 
-        sin: Math.sin,
-        cos: Math.cos,
-        tan: Math.tan,
-        pow: Math.pow,
-        exp: Math.exp,
-        min: Math.min,
-        max: Math.max,
-        sqrt: Math.sqrt,
-        atan: Math.atan,
-        atan2: Math.atan2,
-        ceil: Math.ceil,
-        round: Math.round,
-        floor: Math.floor,
+        _globals: {
 
-        random: function( min, max ) {
+            PI: Math.PI,
+            TWO_PI: Math.PI * 2,
+            HALF_PI: Math.PI / 2,
+            QUATER_PI: Math.PI / 4,
 
-            // Allow for random string / array access.
-            if ( min && typeof min.length === 'number' && !!min.length ) {
-                return min[ Math.floor( Math.random() * min.length ) ];
+            sin: Math.sin,
+            cos: Math.cos,
+            tan: Math.tan,
+            pow: Math.pow,
+            exp: Math.exp,
+            min: Math.min,
+            max: Math.max,
+            sqrt: Math.sqrt,
+            atan: Math.atan,
+            atan2: Math.atan2,
+            ceil: Math.ceil,
+            round: Math.round,
+            floor: Math.floor,
+
+            random: function( min, max ) {
+
+                // Allow for random string / array access.
+                if ( min && typeof min.length === 'number' && !!min.length ) {
+                    return min[ Math.floor( Math.random() * min.length ) ];
+                }
+
+                if ( typeof max !== 'number' ) {
+                    max = min || 1.0;
+                    min = 0;
+                }
+
+                return min + Math.random() * (max - min);
+            }
+        },
+
+        _defaults: {
+
+            type        : Sketch.CANVAS,
+            fullscreen  : true,
+            autoclear   : true,
+            autostart   : true,
+            container   : document.body,
+
+            setup       : function() {},
+            draw        : function( ctx, dt ) {},
+            resize      : function( width, height ) {},
+            touchstart  : function( event ) {},
+            touchmove   : function( event ) {},
+            mousemove   : function( event ) {},
+            click       : function( event ) {},
+            keydown     : function( event ) {},
+            keyup       : function( event ) {}
+        },
+
+        /**
+         * --------------------------------------------------
+         *
+         *  Public API
+         *
+         * --------------------------------------------------
+         */
+
+        start: function() {
+
+            // Bind all methods to this scope.
+            this._bindAll();
+
+            // Initialise properties.
+            this.currentTime = +new Date();
+            this.previousTime = this.currentTime;
+
+            this.mouseX = 0.0;
+            this.mouseY = 0.0;
+            this.oMouseX = 0.0;
+            this.oMouseY = 0.0;
+            this.touches = [];
+
+            this.ALT = false;
+            this.CTRL = false;
+            this.SHIFT = false;
+
+            // Create container.
+            this.domElement = document.createElement( 'div' );
+            this.container.appendChild( this.domElement );
+
+            // Create rendering context.
+            switch( this.type ) {
+
+                case Sketch.CANVAS:
+
+                    if ( !!window.CanvasRenderingContext2D ) {
+
+                        this.canvas = document.createElement( 'canvas' );
+                        this.ctx = this.canvas.getContext( '2d' );
+                        this.domElement.appendChild( this.canvas );
+
+                    } else {
+
+                        throw new Error( 'CanvasRenderingContext2D not supported' );
+                    }
+
+                    break;
             }
 
-            if ( typeof max !== 'number' ) {
-                max = min || 1.0;
-                min = 0;
-            }
+            // Bind event handlers.
+            addEvent( this.domElement, 'click', this._onClick );
+            addEvent( this.domElement, 'mousemove', this._onMouseMove );
+            addEvent( this.domElement, 'touchstart', this._onTouchStart );
+            addEvent( this.domElement, 'touchmove', this._onTouchMove );
+            addEvent( window, 'keydown', this._onKeyDown );
+            addEvent( window, 'keyup', this._onKeyUp );
+            addEvent( window, 'resize', this._onResize );
 
-            return min + Math.random() * (max - min);
-        }
-    };
+            // Add stats.
+            if ( this.stats ) {
 
-    Sketch.prototype._defaults = {
+                if ( typeof Stats === 'function' ) {
 
-        type        : Sketch.CANVAS,
-        fullscreen  : true,
-        autoclear   : true,
-        autostart   : true,
-        container   : document.body,
-
-        setup       : function() {},
-        draw        : function( ctx, dt ) {},
-        resize      : function( width, height ) {},
-        touchstart  : function( event ) {},
-        touchmove   : function( event ) {},
-        mousemove   : function( event ) {},
-        click       : function( event ) {},
-        keydown     : function( event ) {},
-        keyup       : function( event ) {}
-    };
-
-    Sketch.prototype._extend = function( child, parent ) {
-
-        for ( var prop in parent ) {
-            if ( !child.hasOwnProperty( prop ) && parent.hasOwnProperty( prop ) ) {
-                child[ prop ] = parent[ prop ];
-            }
-        }
-
-        return child;
-    },
-
-    Sketch.prototype._bindAll = function( target, scope ) {
-
-        target = target || this;
-        scope = scope || this;
-
-        for ( var prop in target ) {
-            if ( typeof target[ prop ] === 'function' ) {
-                target[ prop ] = target[ prop ].bind( scope );
-            }
-        }
-    },
-
-    Sketch.prototype._update = function( time ) {
-
-        if ( this._stats ) {
-            this._stats.begin();
-        }
-
-        this.previousTime = this.currentTime;
-        this.currentTime = time;
-
-        if ( this.autoclear ) {
-            this.clear();
-        }
-
-        this.draw( this.ctx, this.currentTime - this.previousTime );
-
-        requestAnimationFrame( this._update );
-
-        if ( this._stats ) {
-            this._stats.end();
-        }
-    };
-
-    Sketch.prototype._initStats = function() {
-
-        if ( typeof Stats === 'function' ) {
-
-            this._stats = new Stats();
-            this._stats.setMode(0);
-
-            this._stats.domElement.style.position = 'absolute';
-            this._stats.domElement.style.right = '10px';
-            this._stats.domElement.style.top = '10px';
-
-            document.body.appendChild( this._stats.domElement );
-        }
-    };
-
-    Sketch.prototype._setMouse = function( x, y ) {
-
-        this.oMouseX = this.mouseX;
-        this.oMouseY = this.mouseY;
-
-        this.mouseX = x;
-        this.mouseY = y;
-    };
-
-    /**
-     * --------------------------------------------------
-     *
-     *  Event Handlers
-     *
-     * --------------------------------------------------
-     */
-
-    Sketch.prototype._onResize = function( event ) {
-
-        if ( this.fullscreen ) {
-
-            this.width = window.innerWidth;
-            this.height = window.innerHeight;
-
-        } else {
-
-            this.width = this.width;
-            this.height = this.height;
-        }
-
-        switch ( this.type ) {
-
-            case Sketch.CANVAS:
-
-                this.canvas.width = this.width;
-                this.canvas.height = this.height;
-
-                break;
-        }
-
-        this.domElement.style.width = this.width;
-        this.domElement.style.height = this.height;
-
-        this.resize( this.width, this.height );
-    },
-
-    Sketch.prototype._onTouchStart = function( event ) {
-    };
-
-    Sketch.prototype._onClick = function( event ) {
-
-        this.click( event );
-    };
-
-    Sketch.prototype._onMouseMove = function( event ) {
-
-        this._setMouse( event.clientX, event.clientY );
-        this.mousemove( event );
-    };
-
-    Sketch.prototype._onTouchMove = function( event ) {
-
-        event.preventDefault();
-
-        this.touches = event.touches;
-        var touch = this.touches[0];
-
-        this._setMouse( touch.pageX, touch.pageY );
-        this.touchmove( event );
-        this.mousemove( event );
-    };
-
-    Sketch.prototype._onKeyDown = function( event ) {
-
-        this.key = event.keyCode;
-        this.ALT = event.altKey;
-        this.CTRL = event.ctrlKey || event.metaKey;
-        this.SHIFT = event.shiftKey;
-
-        this.keydown( event );
-    },
-
-    Sketch.prototype._onKeyUp = function( event ) {
-
-        this.key = null;
-        this.ALT = this.CTRL = this.SHIFT = false;
-
-        this.keyup( event );
-    },
-
-    /**
-     * --------------------------------------------------
-     *
-     *  Public API
-     *
-     * --------------------------------------------------
-     */
-
-    Sketch.prototype.start = function() {
-
-        // Bind all methods to this scope.
-        this._bindAll();
-
-        // Initialise properties.
-        this.currentTime = +new Date();
-        this.previousTime = this.currentTime;
-
-        this.mouseX = 0.0;
-        this.mouseY = 0.0;
-        this.oMouseX = 0.0;
-        this.oMouseY = 0.0;
-        this.touches = [];
-
-        this.ALT = false;
-        this.CTRL = false;
-        this.SHIFT = false;
-
-        // Create container.
-        this.domElement = document.createElement( 'div' );
-        this.container.appendChild( this.domElement );
-
-        // Create rendering context.
-        switch( this.type ) {
-
-            case Sketch.CANVAS:
-
-                if ( !!window.CanvasRenderingContext2D ) {
-
-                    this.canvas = document.createElement( 'canvas' );
-                    this.ctx = this.canvas.getContext( '2d' );
-                    this.domElement.appendChild( this.canvas );
+                    this._initStats();
 
                 } else {
 
-                    throw new Error( 'CanvasRenderingContext2D not supported' );
+                    var script = document.createElement( 'script' );
+                    script.setAttribute( 'type', 'text/javascript' );
+                    script.setAttribute( 'src', 'https://raw.github.com/mrdoob/stats.js/d5f5aa40a24a6d5667ecbcef20c13c75cf236bcd/build/Stats.js' );
+                    script.onload = this.onreadystatechange = this._initStats;
+
+                    document.body.appendChild( script );
                 }
+            }
 
-                break;
-        }
+            // Initialise.
+            this._onResize();
+            this.setup();
+            this._update( this.currentTime );
+        },
 
-        // Bind event handlers.
-        addEvent( this.domElement, 'click', this._onClick );
-        addEvent( this.domElement, 'mousemove', this._onMouseMove );
-        addEvent( this.domElement, 'touchstart', this._onTouchStart );
-        addEvent( this.domElement, 'touchmove', this._onTouchMove );
-        addEvent( window, 'keydown', this._onKeyDown );
-        addEvent( window, 'keyup', this._onKeyUp );
-        addEvent( window, 'resize', this._onResize );
+        clear: function() {
 
-        // Add stats.
-        if ( this.stats ) {
+            switch ( this.type ) {
+
+                case Sketch.CANVAS:
+
+                    this.canvas.width = this.canvas.width;
+
+                    break;
+            }
+        },
+
+        /**
+         * --------------------------------------------------
+         *
+         *  Methods
+         *
+         * --------------------------------------------------
+         */
+
+        _extend: function( child, parent ) {
+
+            for ( var prop in parent ) {
+                if ( !child.hasOwnProperty( prop ) && parent.hasOwnProperty( prop ) ) {
+                    child[ prop ] = parent[ prop ];
+                }
+            }
+
+            return child;
+        },
+
+        _bindAll: function( target, scope ) {
+
+            target = target || this;
+            scope = scope || this;
+
+            for ( var prop in target ) {
+                if ( typeof target[ prop ] === 'function' ) {
+                    target[ prop ] = target[ prop ].bind( scope );
+                }
+            }
+        },
+
+        _update: function( time ) {
+
+            if ( this._stats ) {
+                this._stats.begin();
+            }
+
+            this.previousTime = this.currentTime;
+            this.currentTime = time;
+
+            if ( this.autoclear ) {
+                this.clear();
+            }
+
+            this.draw( this.ctx, this.currentTime - this.previousTime );
+
+            requestAnimationFrame( this._update );
+
+            if ( this._stats ) {
+                this._stats.end();
+            }
+        },
+
+        _initStats: function() {
 
             if ( typeof Stats === 'function' ) {
 
-                this._initStats();
+                this._stats = new Stats();
+                this._stats.setMode(0);
+
+                this._stats.domElement.style.position = 'absolute';
+                this._stats.domElement.style.right = '10px';
+                this._stats.domElement.style.top = '10px';
+
+                document.body.appendChild( this._stats.domElement );
+            }
+        },
+
+        _setMouse: function( x, y ) {
+
+            this.oMouseX = this.mouseX;
+            this.oMouseY = this.mouseY;
+
+            this.mouseX = x;
+            this.mouseY = y;
+        },
+
+        /**
+         * --------------------------------------------------
+         *
+         *  Event Handlers
+         *
+         * --------------------------------------------------
+         */
+
+        _onResize: function( event ) {
+
+            if ( this.fullscreen ) {
+
+                this.width = window.innerWidth;
+                this.height = window.innerHeight;
 
             } else {
 
-                var script = document.createElement( 'script' );
-                script.setAttribute( 'type', 'text/javascript' );
-                script.setAttribute( 'src', 'https://raw.github.com/mrdoob/stats.js/d5f5aa40a24a6d5667ecbcef20c13c75cf236bcd/build/Stats.js' );
-                script.onload = this.onreadystatechange = this._initStats;
-
-                document.body.appendChild( script );
+                this.width = this.width;
+                this.height = this.height;
             }
-        }
 
-        // Initialise.
-        this._onResize();
-        this.setup();
-        this._update( this.currentTime );
-    },
+            switch ( this.type ) {
 
-    Sketch.prototype.clear = function() {
+                case Sketch.CANVAS:
 
-        switch ( this.type ) {
+                    this.canvas.width = this.width;
+                    this.canvas.height = this.height;
 
-            case Sketch.CANVAS:
+                    break;
+            }
 
-                this.canvas.width = this.canvas.width;
+            this.domElement.style.width = this.width;
+            this.domElement.style.height = this.height;
 
-                break;
+            this.resize( this.width, this.height );
+        },
+
+        _onTouchStart: function( event ) {
+        },
+
+        _onClick: function( event ) {
+
+            this.click( event );
+        },
+
+        _onMouseMove: function( event ) {
+
+            this._setMouse( event.clientX, event.clientY );
+            this.mousemove( event );
+        },
+
+        _onTouchMove: function( event ) {
+
+            event.preventDefault();
+
+            this.touches = event.touches;
+            var touch = this.touches[0];
+
+            this._setMouse( touch.pageX, touch.pageY );
+            this.touchmove( event );
+            this.mousemove( event );
+        },
+
+        _onKeyDown: function( event ) {
+
+            this.key = event.keyCode;
+            this.ALT = event.altKey;
+            this.CTRL = event.ctrlKey || event.metaKey;
+            this.SHIFT = event.shiftKey;
+
+            this.keydown( event );
+        },
+
+        _onKeyUp: function( event ) {
+
+            this.key = null;
+            this.ALT = this.CTRL = this.SHIFT = false;
+
+            this.keyup( event );
         }
     };
 
