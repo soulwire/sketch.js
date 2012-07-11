@@ -13,70 +13,22 @@ var Sketch;
 Sketch = (function() {
 
     /**
-     * --------------------------------------------------
+     * requestAnimationFrame polyfill by Erik Möller
+     * Fixes from Paul Irish and Tino Zijdel
      *
-     *  Polyfills
-     *
-     * --------------------------------------------------
+     * @see http://paulirish.com/2011/requestanimationframe-for-smart-animating/
+     * @see http://my.opera.com/emoller/blog/2011/12/20/requestanimationframe-for-smart-er-animating
      */
 
-    // http://paulirish.com/2011/requestanimationframe-for-smart-animating/
-    // http://my.opera.com/emoller/blog/2011/12/20/requestanimationframe-for-smart-er-animating
+    (function(){for(var d=0,a=["ms","moz","webkit","o"],b=0;b<a.length&&!window.requestAnimationFrame;++b)window.requestAnimationFrame=window[a[b]+"RequestAnimationFrame"],window.cancelAnimationFrame=window[a[b]+"CancelAnimationFrame"]||window[a[b]+"CancelRequestAnimationFrame"];window.requestAnimationFrame||(window.requestAnimationFrame=function(b){var a=(new Date).getTime(),c=Math.max(0,16-(a-d)),e=window.setTimeout(function(){b(a+c)},c);d=a+c;return e});window.cancelAnimationFrame||(window.cancelAnimationFrame=function(a){clearTimeout(a)})})();
 
-    // requestAnimationFrame polyfill by Erik Möller
-    // fixes from Paul Irish and Tino Zijdel
+    /**
+     * Function.prototype.bind polyfill
+     *
+     * @see https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Function/bind
+     */
 
-    (function() {
-
-        var lastTime = 0;
-        var vendors = ['ms', 'moz', 'webkit', 'o'];
-
-        for( var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x ) {
-            window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
-            window.cancelAnimationFrame = window[vendors[x]+'CancelAnimationFrame'] || window[vendors[x]+'CancelRequestAnimationFrame'];
-        }
-
-        if ( !window.requestAnimationFrame )
-            window.requestAnimationFrame = function( callback, element ) {
-                var currTime = new Date().getTime();
-                var timeToCall = Math.max(0, 16 - (currTime - lastTime));
-                var id = window.setTimeout( function() { callback( currTime + timeToCall ); }, timeToCall );
-                lastTime = currTime + timeToCall;
-                return id;
-            };
-
-        if ( !window.cancelAnimationFrame )
-            window.cancelAnimationFrame = function( id ) {
-                clearTimeout( id );
-            };
-    }());
-
-    // Function.prototype.bind polyfill
-    // @see https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Function/bind
-
-    if ( !Function.prototype.bind ) {
-
-        Function.prototype.bind = function ( obj ) {
-
-            // closest thing possible to the ECMAScript 5 internal IsCallable function
-            if (typeof this !== 'function') {
-                throw new TypeError( 'Function.prototype.bind - what is trying to be bound is not callable' );
-            }
-
-            var slice = [].slice,
-                args = slice.call( arguments, 1 ),
-                self = this,
-                nop = function () { },
-                bound = function () {
-                    return self.apply( this instanceof nop ? this : (obj || {} ),
-                                      args.concat( slice.call( arguments ) ) );
-                };
-
-            bound.prototype = this.prototype;
-
-            return bound;
-        };
-    }
+    Function.prototype.bind||(Function.prototype.bind=function(c){if("function"!==typeof this)throw new TypeError("Function.prototype.bind - what is trying to be bound is not callable");var a=[].slice,d=a.call(arguments,1),e=this,f=function(){},b=function(){return e.apply(this instanceof f?this:c||{},d.concat(a.call(arguments)))};b.prototype=this.prototype;return b});
 
     /**
      * --------------------------------------------------
