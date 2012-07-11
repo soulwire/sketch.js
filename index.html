@@ -3,12 +3,44 @@
 		<title>Sketch</title>
 		<style type="text/css">
 			html, body {
+				font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
 				background: #2b2b2b;
 				margin: 0;
+			}
+			header {
+				position: absolute;
+				left: 10px;
+				top: 10px;
+			}
+			h1, h2 {
+				text-transform: uppercase;
+				font-weight: 600;
+				line-height: 14px;
+				margin: 0;
+				color: #666;
+			}
+			h1 {
+				font-size: 13px;
+			}
+			h2 {
+				font-style: italic;
+				font-size: 11px;
+			}
+			a {
+				text-decoration: none;
+				opacity: 0.8;
+				color: #ddd;
+			}
+			a:hover {
+				color: #fff;
 			}
 		</style>
 	</head>
 	<body>
+		<header>
+			<h1><a href="https://github.com/soulwire/sketch.js">sketch.js</a> example</h1>
+			<h2>Move your mouse</h2>
+		</header>
 		<div id="container"></div>
 		<script type="text/javascript" src="js/sketch.js"></script>
 		<script type="text/javascript">
@@ -88,6 +120,10 @@
 
 						this.particles = [];
 						this.pool = [];
+
+						this.mouseX = this.width * 0.5;
+						this.mouseY = this.height * 0.5;
+						this.mousemove();
 					},
 
 					draw: function( ctx, dt ) {
