@@ -1,46 +1,68 @@
 <html>
 	<head>
 		<title>Sketch</title>
+		<link href='http://fonts.googleapis.com/css?family=Play:400,700' rel='stylesheet' type='text/css'>
 		<style type="text/css">
+
 			html, body {
-				font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+				font-family: 'Play', sans-serif;
 				background: #2b2b2b;
 				margin: 0;
 			}
-			header {
+
+			#info {
 				position: absolute;
 				left: 10px;
 				top: 10px;
 			}
-			h1, h2 {
-				text-transform: uppercase;
-				font-weight: 600;
-				line-height: 14px;
-				margin: 0;
-				color: #666;
-			}
-			h1 {
-				font-size: 13px;
-			}
-			h2 {
-				font-style: italic;
-				font-size: 11px;
-			}
-			a {
-				text-decoration: none;
-				opacity: 0.8;
-				color: #ddd;
-			}
-			a:hover {
+
+			#info {
+				background: rgba(0,0,0,0.8);
+				padding: 12px 10px;
+				margin-bottom: 1px;
 				color: #fff;
+			}
+
+			#info h1 {
+				line-height: 22px;
+				font-weight: 300;
+				font-size: 18px;
+				margin: 0;
+			}
+
+			#info h2 {
+				line-height: 14px;
+				font-weight: 300;
+				font-size: 12px;
+				color: rgba(255,255,255,0.8);
+				margin: 0 0 6px 0;
+			}
+
+			#info a {
+				text-transform: uppercase;
+				text-decoration: none;
+				border-bottom: 1px dotted rgba(255,255,255,0.2);
+				margin-right: 4px;
+				line-height: 20px;
+				font-size: 10px;
+				color: rgba(255,255,255,0.5);
+			}
+
+			#info a:hover {
+				border-bottom: 1px dotted rgba(255,255,255,0.6);
+				color: rgba(255,255,255,1.0);
 			}
 		</style>
 	</head>
 	<body>
-		<header>
-			<h1><a href="https://github.com/soulwire/sketch.js">sketch.js</a> example</h1>
-			<h2>Move your mouse</h2>
-		</header>
+		<article id="info">
+			<header>
+				<h1><strong>sketch.js</strong> demo</h1>
+				<h2>Spawn particles with your mouse</h2>
+			</header>
+			<a href="https://github.com/soulwire/sketch.js/zipball/master">Download</a>
+			<a href="https://github.com/soulwire/sketch.js">View on Github</a>
+		</article>
 		<div id="container"></div>
 		<script type="text/javascript" src="js/sketch.js"></script>
 		<script type="text/javascript">
