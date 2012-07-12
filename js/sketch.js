@@ -43,6 +43,9 @@ Sketch = (function() {
         // Provide some useful global properties & methods.
         this._extend( window, this._globals );
 
+        // Generate a GUID for thi sketch.
+        this.id = 'sketch-' + floor( random( 0xffffff ) );
+
         // Merge options with defaults.
         options = this._extend( options || {}, this._defaults );
         this._extend( this, options );
@@ -148,6 +151,8 @@ Sketch = (function() {
 
             // Create container.
             this.domElement = document.createElement( 'div' );
+            this.domElement.id = this.id;
+            this.domElement.className = 'sketch';
             this.container.appendChild( this.domElement );
 
             // Create rendering context.
