@@ -78,6 +78,7 @@ Sketch = (function() {
     }
 
     Sketch.CANVAS = 'canvas';
+    Sketch.WEB_GL = 'webgl';
 
     Sketch.prototype = {
 
@@ -177,6 +178,8 @@ Sketch = (function() {
             this.domElement.className = 'sketch';
             this.container.appendChild( this.domElement );
 
+            this.canvas = document.createElement( 'canvas' );
+
             // Create rendering context.
             switch( this.type ) {
 
@@ -184,16 +187,24 @@ Sketch = (function() {
 
                     if ( !!window.CanvasRenderingContext2D ) {
 
-                        this.canvas = document.createElement( 'canvas' );
                         this.ctx = this.canvas.getContext( '2d' );
-                        this.domElement.appendChild( this.canvas );
 
-                    } else {
-
-                        throw new Error( 'CanvasRenderingContext2D not supported' );
-                    }
+                    } else throw 'CanvasRenderingContext2D not supported';
 
                     break;
+
+                case Sketch.WEB_GL:
+
+                    try { this.ctx = this.canvas.getContext( 'webgl' ) || this.canvas.getContext( 'experimental-webgl' ); }
+                    catch( error ) {}
+
+                    if ( !( this.gl = this.ctx ) ) throw 'WebGL not supported';
+
+                    break;
+            }
+
+            if ( this.ctx ) {
+                this.domElement.appendChild( this.canvas );
             }
 
             // Bind event handlers.
@@ -402,6 +413,7 @@ Sketch = (function() {
             switch ( this.type ) {
 
                 case Sketch.CANVAS:
+                case Sketch.WEB_GL:
 
                     this.canvas.width = this.width;
                     this.canvas.height = this.height;

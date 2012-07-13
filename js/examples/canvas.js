@@ -97,7 +97,7 @@ var example = new Sketch({
 
 		var i, particle;
 
-		this.ctx.globalCompositeOperation  = 'lighter';
+		ctx.globalCompositeOperation  = 'lighter';
 
 		for ( i = this.particles.length - 1; i >= 0; i-- ) {
 
