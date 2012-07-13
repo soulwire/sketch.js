@@ -333,11 +333,27 @@ Sketch = (function() {
 
         _setMouse: function( x, y ) {
 
+            this.touches[0] = { x:x, y:y };
+
             this.oMouseX = this.mouseX;
             this.oMouseY = this.mouseY;
 
             this.mouseX = x;
             this.mouseY = y;
+        },
+
+        _getOffset: function( el ) {
+
+            var x = 0;
+            var y = 0;
+
+            while( el && !isNaN( el.offsetLeft ) && !isNaN( el.offsetTop ) ) {
+                x += el.offsetLeft - el.scrollLeft;
+                y += el.offsetTop - el.scrollTop;
+                el = el.offsetParent;
+            }
+
+            return { x:x, y:y };
         },
 
         _update: function( time ) {
@@ -400,16 +416,17 @@ Sketch = (function() {
         },
 
         _onTouchStart: function( event ) {
+            this.touchstart( event );
         },
 
         _onClick: function( event ) {
-
             this.click( event );
         },
 
         _onMouseMove: function( event ) {
 
-            this._setMouse( event.clientX, event.clientY );
+            var offset = this._getOffset( this.domElement );
+            this._setMouse( event.clientX - offset.x, event.clientY - offset.y );
             this.mousemove( event );
         },
 
@@ -417,10 +434,20 @@ Sketch = (function() {
 
             event.preventDefault();
 
-            this.touches = event.touches;
-            var touch = this.touches[0];
+            var touch, offset = this._getOffset( this.domElement ), i, n;
 
-            this._setMouse( touch.pageX, touch.pageY );
+            this.touches = event.touches;
+
+            for ( i = 0, n = event.touches.length; i < n; i++ ) {
+
+                touch = this.touches[i];
+                touch.x = touch.clientX - offset.x;
+                touch.y = touch.clientY - offset.y;
+            }
+
+            touch = this.touches[0];
+
+            this._setMouse( touch.x, touch.y );
             this.touchmove( event );
             this.mousemove( event );
         },
