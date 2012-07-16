@@ -102,39 +102,39 @@ var sketch = (function() {
     // Properties & methods mixed into ctx
     var api = {
 
-        keys       : {},  // Hash of currently pressed keys
-
         millis     : 0,   // Total running milliseconds
         now        : 0,   // Current time in milliseconds
         dt         : 0,   // Delta time between frames (milliseconds)
 
+        keys       : {},  // Hash of currently pressed keys
         mouseX     : 0,
         mouseY     : 0,
         oMouseX    : 0,
         oMouseY    : 0,
         touches    : [],
-        dragging   : false
+        dragging   : false,
+
+        // Starts the update / rendering process
+        start: function() {
+
+            if ( ctx.setup ) ctx.setup();
+            update();
+        },
+
+        // Stops the update / rendering process
+        stop: function() {
+
+            cancelAnimationFrame( timeout );
+        },
+
+        // Clears the current drawing context
+        // TODO: Empty children here for non-canvas sketches?
+        clear: function() {
+
+            if ( ctx.canvas )
+                ctx.canvas.width = ctx.canvas.width;
+        }
     };
-
-    // Starts the update / rendering process
-    api.start = function() {
-
-        if ( ctx.setup ) ctx.setup();
-        update();
-    }
-
-    // Stops the update / rendering process
-    api.stop = function() {
-
-        cancelAnimationFrame( timeout );
-    }
-
-    // Clears the current drawing context
-    // TODO: Empty children here for non-canvas sketches?
-    api.clear = function() {
-
-        if ( ctx.canvas ) ctx.canvas.width = ctx.canvas.width;
-    }
 
     // ----------------------------------------
     // Helpers
@@ -214,14 +214,14 @@ var sketch = (function() {
         // Mix options into ctx
         extend( ctx, options );
 
+        // Add public properties
+        extend( ctx, api );
+
         // Bind event handlers
         bindEvents();
 
         // Set initial dimensions
         resize();
-
-        // Add public properties
-        extend( ctx, api );
 
         if ( ctx.autostart ) setTimeout( ctx.start, 0 );
 
@@ -244,27 +244,27 @@ var sketch = (function() {
     // Shallow clones a given object
     function clone( obj ) {
 
-        var clone = {};
+        var copy = {};
+
+        function getCallback( method, context ) {
+
+            return function() {
+                method.call( context, arguments );
+            };
+        }
 
         for ( var prop in obj ) {
 
-            if ( typeof obj[ prop ] === 'function' ) {
-                
-                clone[ prop ] = ( function( callback ) {
-                    
-                    return function() {
-                        callback.call( obj, arguments );
-                    }
+            if ( typeof obj[ prop ] === 'function' )
 
-                })( obj[ prop ] );
+                copy[ prop ] = getCallback( obj[ prop ], obj );
 
-            } else {
+            else
 
-                clone[ prop ] = obj[ prop ];
-            }
+                copy[ prop ] = obj[ prop ];
         }
 
-        return clone;
+        return copy;
     }
 
     // Sets up sketch mouse & keyboard events
@@ -312,8 +312,8 @@ var sketch = (function() {
             e.original = event;
 
             // Compute container offset
-            for ( var el = ctx.canvas, ox = oy = 0; el; el = el.offsetParent ) {
-                
+            for ( var el = ctx.canvas, ox = 0, oy = 0; el; el = el.offsetParent ) {
+
                 ox += el.offsetLeft;
                 oy += el.offsetTop;
             }
@@ -322,7 +322,7 @@ var sketch = (function() {
             if ( e.touches && !!e.touches.length ) {
 
                 for ( var i = e.touches.length - 1, touch; i >= 0; i-- ) {
-                    
+
                     touch = e.touches[i];
                     touch.x = touch.pageX - ox;
                     touch.y = touch.pageY - oy;
@@ -336,7 +336,7 @@ var sketch = (function() {
                     touch.oldY = o.y;
 
                     old[i] = clone( touch );
-                };
+                }
 
             } else {
 
@@ -363,7 +363,7 @@ var sketch = (function() {
 
             // Prevent scrolling (should this be optional?)
             event.preventDefault();
-            
+
             event = augment( event );
             ctx.touches = event.touches;
             updateMouse( ctx.touches[0] );
@@ -405,7 +405,7 @@ var sketch = (function() {
             event = augment( event );
 
             if ( !ctx.dragging ) {
-                
+
                 unbind( ctx.canvas, 'mousemove', mousemove );
                 unbind( ctx.canvas, 'mouseup', mouseup );
 
@@ -442,7 +442,7 @@ var sketch = (function() {
             event = augment( event );
 
             if ( ctx.dragging ) {
-                
+
                 unbind( document, 'mousemove', mousemove );
                 unbind( document, 'mouseup', mouseup );
 
@@ -469,7 +469,7 @@ var sketch = (function() {
 
             ctx.keys[ map( event.keyCode ) ] = true;
             ctx.keys[ event.keyCode ] = true;
-            
+
             if ( ctx.keydown ) ctx.keydown( event );
         }
 
@@ -477,7 +477,7 @@ var sketch = (function() {
 
             ctx.keys[ map( event.keyCode ) ] = false;
             ctx.keys[ event.keyCode ] = false;
-            
+
             if ( ctx.keyup ) ctx.keyup( event );
         }
 
@@ -506,7 +506,7 @@ var sketch = (function() {
 
     function update( now ) {
 
-        ctx.dt = ( now = now || +new Date ) - ctx.now;
+        ctx.dt = ( now = now || +new Date() ) - ctx.now;
         ctx.millis += ctx.dt;
         ctx.now = now;
 
@@ -535,7 +535,7 @@ var sketch = (function() {
 
     // ----------------------------------------
     // Public API
-    // ---------------------------------------- 
+    // ----------------------------------------
 
     return {
 
