@@ -11,15 +11,17 @@ Check out [the demo](http://soulwire.github.com/sketch.js/) to see what can be m
 
 To get going, just create a new Sketch instance and pass in the properties and methods you want to use:
 
-	new Sketch({
+	var COLOURS = [ '#69D2E7', '#E0E4CC', '#FA6900', '#F9D423' ];
+	var demo;
 
-		COLOURS: [ '#69D2E7', '#E0E4CC', '#FA6900', '#F9D423' ],
+	demo = sketch.create({
 
 		setup: function() {
 			this.circles = [];
 		},
 
 		draw: function( ctx ) {
+
 			for ( var i = 0, n = this.circles.length, c; i < n; i++ ) {
 				c = this.circles[i];
 				ctx.beginPath();
@@ -30,14 +32,17 @@ To get going, just create a new Sketch instance and pass in the properties and m
 			};
 		},
 
-		mousemove: function() {
-			this.circles.push({
-				x: this.mouseX,
-				y: this.mouseY,
-				c: random( this.COLOURS ),
-				a: random( 0.5, 0.8 ),
-				r: random( 10, 40 )
-			});
+		touchmove: function() {
+
+			for ( var i = 0; i < demo.touches.length; i++ ) {
+				this.circles.push({
+					x: demo.touches[i].x,
+					y: demo.touches[i].y,
+					c: random( COLOURS ),
+					a: random( 0.5, 0.8 ),
+					r: random( 10, 40 )
+				});
+			}
 		}
 	});
 
