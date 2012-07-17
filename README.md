@@ -1,57 +1,69 @@
+[sketch.js](https://github.com/soulwire/sketch.js) is a tiny (5k) boilerplate for creating JavaScript based creative coding experiments with Canvas, WebGL and the DOM.
 
-## sketch.js
+It handles all that tedious but necessary stuff that would normally slow you down - setting up an animation loop, creating and managing a graphics context, binding and normalising mouse, touch and keyboard events, handling window resizes (etc). You get the idea.
 
-[sketch.js](https://github.com/soulwire/sketch.js) is a tiny boilerplate for JavaScript creative coding experiments.
+It also provides fast access to useful math functions and constants and extends random to handle ranges and arrays. Check out the [wiki](https://github.com/soulwire/sketch.js/wiki/API) or the [source](https://github.com/soulwire/sketch.js/blob/master/js/sketch.js) for the full API.
 
-It handles the boring but necessary stuff, like setting up an animation loop, binding mouse, touch and keyboard events, creating a drawing context and handling resizing - allowing you to only write the code that you need to make cool things.
+###A Basic Example
 
-Check out [the demo](http://soulwire.github.com/sketch.js/) to see what can be made with a few lines of code.
+If you’ve used libraries like [Processing](http://processing.org/) and [Open Frameworks](http://www.openframeworks.cc/) before, [sketch.js](https://github.com/soulwire/sketch.js) will be especially quick to get going with. You can simply hook onto methods like `setup`, `draw` and `mousemove` to start playing:
 
-### A Basic Example
+	var ctx = Sketch.create();
+	
+	ctx.draw = function() {
+		ctx.beginPath();
+		ctx.arc( random( ctx.width ), random( ctx.height ), 10, 0, TWO_PI );
+		ctx.fill();
+	}
 
-To get going, just create a new Sketch instance and pass in the properties and methods you want to use:
+Or if you prefer the syntax, you can also pass all the methods you want to use directly to the `create` method:
 
-	var COLOURS = [ '#69D2E7', '#E0E4CC', '#FA6900', '#F9D423' ];
-	var demo;
-
-	demo = sketch.create({
-
-		setup: function() {
-			this.circles = [];
-		},
-
-		draw: function( ctx ) {
-
-			for ( var i = 0, n = this.circles.length, c; i < n; i++ ) {
-				c = this.circles[i];
-				ctx.beginPath();
-				ctx.globalAlpha = c.a;
-				ctx.arc( c.x, c.y, c.r, 0, TWO_PI );
-				ctx.fillStyle = c.c;
-				ctx.fill();
-			};
-		},
-
-		touchmove: function() {
-
-			for ( var i = 0; i < demo.touches.length; i++ ) {
-				this.circles.push({
-					x: demo.touches[i].x,
-					y: demo.touches[i].y,
-					c: random( COLOURS ),
-					a: random( 0.5, 0.8 ),
-					r: random( 10, 40 )
-				});
-			}
+	Sketch.create({
+			
+		draw: function() {
+			ctx.beginPath();
+			ctx.arc( random( ctx.width ), random( ctx.height ), 10, 0, TWO_PI );
+			ctx.fill();
 		}
+
 	});
 
-__sketch.js__ roughly follows the structure of libraries like [Processing](http://processing.org/) and [Open Frameworks](http://www.openframeworks.cc/), providing methods like __setup__, __draw__, __mousemove__ and __keydown__, as well as useful things like the current and previous mouse position, delta time between frames and shortcuts to common math functions and constants.
+###Events
 
-_Full API coming soon_
+Mouse, touch and keyboard events are augmented for convenience and certain properties are also stored in the sketch for when you need them outside event handlers.
 
-#### Building
+The x and y properties are the mouse / touch coordinates relative to the window (clientX / clientY).
 
-If you modify the source and want to produce your own build, install [UglifyJS](https://github.com/mishoo/UglifyJS) with CLI then run the following command from the _sketch.js_ directory.
+	ctx.mousemove = function( e ) {
+		ctx.lineTo( e.x, e.y );
+	}
+	
+If you're supporting touches, just handle them - on the desktop, the 0th element will be the mouse.
 
-	uglifyjs -v -o js/sketch.min.js js/sketch.js
+	ctx.mousemove = function( e ) {
+		for ( var i = 0, n = e.touches.length; i < n; i++ ) {
+			ctx.arc( e.touches[i].x, e.touches[i].y, 10, 0, TWO_PI );
+		}
+	}
+
+Touches and mouse position are stored in the sketch for access outside event handlers.
+
+	ctx.draw = function() {
+		for ( var i = 0, n = ctx.touches.length; i < n; i++ ) {
+			ctx.arc( ctx.touches[i].x, ctx.touches[i].y, 10, 0, TWO_PI );
+		}
+	}
+
+Events and the stored touches also contain the previous x and y values (`ox`, `oy`) and the deltas (`dx`, `dy`)
+
+	ctx.mousemove = function( e ) {
+		ctx.moveTo( e.ox, e.oy ); // or ctx.mouse.ox, ctx.mouse.oy
+		ctx.lineTo( e.x, e.y ); // or ctx.mouse.x, ctx.mouse.y
+	}
+
+Keys are names and have useful constants.
+
+	ctx.keydown = function() {
+		if ( ctx.keys.SPACE ) ctx.reset();
+		if ( ctx.keys.C ) ctx.clear();
+	}

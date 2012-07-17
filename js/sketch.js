@@ -21,22 +21,6 @@
  * THE SOFTWARE.
  */
 
-// requestAnimationFrame polyfill by Erik Möller
-// Fixes from Paul Irish and Tino Zijdel
-// @see http://paulirish.com/2011/requestanimationframe-for-smart-animating/
-// @see http://my.opera.com/emoller/blog/2011/12/20/requestanimationframe-for-smart-er-animating
-
-(function(){for(var d=0,a=["ms","moz","webkit","o"],b=0;b<a.length&&!window.requestAnimationFrame;++b)window.requestAnimationFrame=window[a[b]+"RequestAnimationFrame"],window.cancelAnimationFrame=window[a[b]+"CancelAnimationFrame"]||window[a[b]+"CancelRequestAnimationFrame"];window.requestAnimationFrame||(window.requestAnimationFrame=function(b){var a=(new Date).getTime(),c=Math.max(0,16-(a-d)),e=window.setTimeout(function(){b(a+c)},c);d=a+c;return e});window.cancelAnimationFrame||(window.cancelAnimationFrame=function(a){clearTimeout(a)})})();
-
-// Function.prototype.bind polyfill
-// @see https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Function/bind
-
-Function.prototype.bind||(Function.prototype.bind=function(c){if("function"!==typeof this)throw new TypeError("Function.prototype.bind - what is trying to be bound is not callable");var a=[].slice,d=a.call(arguments,1),e=this,f=function(){},b=function(){return e.apply(this instanceof f?this:c||{},d.concat(a.call(arguments)))};b.prototype=this.prototype;return b});
-
-// ----------------------------------------
-// sketch.js
-// ----------------------------------------
-
 var sketch = (function() {
 
     // ----------------------------------------
@@ -87,6 +71,8 @@ var sketch = (function() {
         round      : Math.round,
         floor      : Math.floor,
 
+        // TODO: map, lerp (etc)
+
         random     : function( min, max ) {
 
             if ( min && typeof min.length === 'number' && !!min.length )
@@ -107,10 +93,8 @@ var sketch = (function() {
         dt         : 0,   // Delta time between frames (milliseconds)
 
         keys       : {},  // Hash of currently pressed keys
-        mouseX     : 0,
-        mouseY     : 0,
-        oMouseX    : 0,
-        oMouseY    : 0,
+
+        mouse      : { x:0, y:0, ox:0, oy:0, dx:0, dy:0 },
         touches    : [],
         dragging   : false,
 
@@ -296,11 +280,14 @@ var sketch = (function() {
         // Update mouse position
         function updateMouse( coord ) {
 
-            ctx.oMouseX = ctx.mouseX;
-            ctx.oMouseY = ctx.mouseY;
+            ctx.mouse.ox = ctx.mouse.x;
+            ctx.mouse.oy = ctx.mouse.y;
 
-            ctx.mouseX = coord.x;
-            ctx.mouseY = coord.y;
+            ctx.mouse.x = coord.x;
+            ctx.mouse.y = coord.y;
+
+            ctx.mouse.dx = ctx.mouse.x - ctx.mouse.ox;
+            ctx.mouse.dy = ctx.mouse.y - ctx.mouse.oy;
         }
 
         var old = {};
@@ -329,11 +316,11 @@ var sketch = (function() {
 
                     o = old[i] || touch;
 
-                    touch.deltaX = touch.x - o.x;
-                    touch.deltaY = touch.y - o.x;
+                    touch.dx = touch.x - o.x;
+                    touch.dy = touch.y - o.x;
 
-                    touch.oldX = o.x;
-                    touch.oldY = o.y;
+                    touch.ox = o.x;
+                    touch.oy = o.y;
 
                     old[i] = clone( touch );
                 }
@@ -345,11 +332,11 @@ var sketch = (function() {
 
                 o = old[ 'mouse' ] || e;
 
-                e.deltaX = e.x - o.x;
-                e.deltaY = e.y - o.y;
+                e.dx = e.x - o.x;
+                e.dy = e.y - o.y;
 
-                e.oldX = o.x;
-                e.oldY = o.y;
+                e.ox = o.x;
+                e.oy = o.y;
 
                 old[ 'mouse' ] = e;
             }
@@ -546,3 +533,13 @@ var sketch = (function() {
     };
 
 })();
+
+/**
+ * requestAnimationFrame polyfill by Erik Möller
+ * Fixes from Paul Irish and Tino Zijdel
+ *
+ * @see http://goo.gl/ZC1Lm
+ * @seehttp://goo.gl/X0h6k
+ */
+ 
+(function(){for(var d=0,a=["ms","moz","webkit","o"],b=0;b<a.length&&!window.requestAnimationFrame;++b)window.requestAnimationFrame=window[a[b]+"RequestAnimationFrame"],window.cancelAnimationFrame=window[a[b]+"CancelAnimationFrame"]||window[a[b]+"CancelRequestAnimationFrame"];window.requestAnimationFrame||(window.requestAnimationFrame=function(b){var a=(new Date).getTime(),c=Math.max(0,16-(a-d)),e=window.setTimeout(function(){b(a+c)},c);d=a+c;return e});window.cancelAnimationFrame||(window.cancelAnimationFrame=function(a){clearTimeout(a)})})();

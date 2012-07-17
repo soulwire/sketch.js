@@ -37,7 +37,7 @@ var demo = sketch.create({
 			demo.lineWidth = radius;
 
 			demo.beginPath();
-			demo.moveTo( touch.oldX, touch.oldY );
+			demo.moveTo( touch.ox, touch.oy );
 			demo.lineTo( touch.x, touch.y );
 			demo.stroke();
 		};
