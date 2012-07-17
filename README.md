@@ -11,7 +11,7 @@ It also provides fast global access to useful math functions and constants and e
 If you’ve used libraries like [Processing](http://processing.org/) and [Open Frameworks](http://www.openframeworks.cc/) before, __sketch.js__ will be especially quick to get going with. You can simply hook onto methods like `setup`, `draw` and `mousemove` to start playing:
 
 	var ctx = Sketch.create();
-	
+
 	ctx.draw = function() {
 		ctx.beginPath();
 		ctx.arc( random( ctx.width ), random( ctx.height ), 10, 0, TWO_PI );
@@ -21,7 +21,7 @@ If you’ve used libraries like [Processing](http://processing.org/) and [Open F
 Or if you prefer the syntax, you can also pass all the methods you want to use directly to the `create` method:
 
 	Sketch.create({
-			
+
 		draw: function() {
 			ctx.beginPath();
 			ctx.arc( random( ctx.width ), random( ctx.height ), 10, 0, TWO_PI );
@@ -39,7 +39,7 @@ The x and y properties are the mouse / touch coordinates relative to the window 
 	ctx.mousemove = function( e ) {
 		ctx.lineTo( e.x, e.y );
 	}
-	
+
 If you're supporting touches, just handle them - on the desktop, the 0th element will be the mouse so your code will work the same accross devices and platforms.
 
 	ctx.mousemove = function( e ) {
@@ -63,13 +63,13 @@ Previous x and y values `ox`, `oy` and the deltas `dx`, `dy` are also sent in ev
 		ctx.lineTo( e.x, e.y ); // or ctx.mouse.x, ctx.mouse.y
 	}
 
-All keys ennumerted and common function keys are mapped to constants.
+All keys are ennumerted and common function keys are mapped to constants.
 
 	ctx.keydown = function() {
 		if ( ctx.keys.SPACE ) ctx.reset();
 		if ( ctx.keys.C ) ctx.clear();
 	}
-	
+
 ###Build
 
 If you modify the source and want to produce your own build, install [UglifyJS](https://github.com/mishoo/UglifyJS) with CLI then run the following command from the sketch.js directory.
