@@ -2,7 +2,7 @@
 
 It handles all that tedious but necessary stuff that would normally slow you down - setting up an animation loop, creating and managing a graphics context for Canvas or WebGL, cross browser and device event binding and normalisation for mouse, touch and keyboard events, handling window resizes… You get the idea.
 
-Check out [the demo](http://soulwire.github.com/sketch.js/) to see what can be done in just a few lines of code.
+###### Check out [the demo](http://soulwire.github.com/sketch.js/) to see what can be done in just a few lines of code.
 
 When creating a sketch, you specify a _type_ (the default is `Sketch.CANVAS`) and what you get back is an augmented instance of a `CanvasRenderingContext2D`, `WebGLRenderingContext` or `Node` / `HTMLElement`. This gives you direct access to all the usual properties and methods of your chosen context, as well as some new and useful ones added by __sketch.js__
 
