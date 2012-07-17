@@ -61,7 +61,7 @@ var COLOURS = [ '#69D2E7', '#A7DBD8', '#E0E4CC', '#F38630', '#FA6900', '#FF4E50'
 var particles = [];
 var pool = [];
 
-var demo = sketch.create({
+var demo = Sketch.create({
 	container: document.getElementById( 'container' )
 });
 
@@ -114,7 +114,7 @@ demo.update = function() {
 demo.draw = function() {
 
 	demo.globalCompositeOperation  = 'lighter';
-	
+
 	for ( var i = particles.length - 1; i >= 0; i-- ) {
 		particles[i].draw( demo );
 	}

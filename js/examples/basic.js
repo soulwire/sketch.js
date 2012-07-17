@@ -2,7 +2,7 @@
 var COLOURS = [ '#60F0C0', '#FF360E', '#F0D442' ];
 var radius = 0;
 
-var demo = sketch.create({
+var demo = Sketch.create({
 
 	container: document.getElementById( 'container' ),
 	autoclear: false,
@@ -28,7 +28,7 @@ var demo = sketch.create({
 	touchmove: function( e ) {
 
 		for ( var i = demo.touches.length - 1, touch; i >= 0; i-- ) {
-			
+
 			touch = demo.touches[i];
 
 			demo.lineCap = 'round';

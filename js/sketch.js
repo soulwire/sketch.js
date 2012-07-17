@@ -21,7 +21,7 @@
  * THE SOFTWARE.
  */
 
-var sketch = (function() {
+var Sketch = (function() {
 
     // ----------------------------------------
     // CONSTANTS
@@ -166,7 +166,7 @@ var sketch = (function() {
 
         switch ( options.type ) {
 
-            case sketch.WEB_GL:
+            case Sketch.WEB_GL:
 
                 try { ctx = canvas.getContext( 'webgl', options ); } catch (e) {}
                 try { ctx = ctx || canvas.getContext( 'experimental-webgl', options ); } catch (e) {}
@@ -174,7 +174,7 @@ var sketch = (function() {
 
                 break;
 
-            case sketch.CANVAS:
+            case Sketch.CANVAS:
 
                 try { ctx = canvas.getContext( '2d', options ); } catch (e) {}
                 if ( !ctx ) throw 'Canvas not supported';
@@ -541,5 +541,5 @@ var sketch = (function() {
  * @see http://goo.gl/ZC1Lm
  * @seehttp://goo.gl/X0h6k
  */
- 
+
 (function(){for(var d=0,a=["ms","moz","webkit","o"],b=0;b<a.length&&!window.requestAnimationFrame;++b)window.requestAnimationFrame=window[a[b]+"RequestAnimationFrame"],window.cancelAnimationFrame=window[a[b]+"CancelAnimationFrame"]||window[a[b]+"CancelRequestAnimationFrame"];window.requestAnimationFrame||(window.requestAnimationFrame=function(b){var a=(new Date).getTime(),c=Math.max(0,16-(a-d)),e=window.setTimeout(function(){b(a+c)},c);d=a+c;return e});window.cancelAnimationFrame||(window.cancelAnimationFrame=function(a){clearTimeout(a)})})();
