@@ -1,12 +1,16 @@
-[sketch.js](https://github.com/soulwire/sketch.js) is a tiny (5k) boilerplate for creating JavaScript based creative coding experiments with Canvas, WebGL and the DOM.
+[sketch.js](https://github.com/soulwire/sketch.js) is a tiny (~5k) boilerplate for creating JavaScript based creative coding experiments.
 
-It handles all that tedious but necessary stuff that would normally slow you down - setting up an animation loop, creating and managing a graphics context, binding and normalising mouse, touch and keyboard events, handling window resizes (etc). You get the idea.
+It handles all that tedious but necessary stuff that would normally slow you down - setting up an animation loop, creating and managing a graphics context for Canvas or WebGL, cross browser and device event binding and normalisation for mouse, touch and keyboard events, handling window resizes… You get the idea.
 
-It also provides fast access to useful math functions and constants and extends random to handle ranges and arrays. Check out the [wiki](https://github.com/soulwire/sketch.js/wiki/API) or the [source](https://github.com/soulwire/sketch.js/blob/master/js/sketch.js) for the full API.
+> Check out [the demo](http://soulwire.github.com/sketch.js/) to see what can be done in just a few lines of code.
+
+When creating a sketch, you specify a `type` (the default is `Sketch.CANVAS`) and what you get back is an augmented `CanvasRenderingContext2D`, `WebGLRenderingContext` or `Node` / `HTMLElement`. This gives you direct access to all the usual properties and methods of your chosen context, as well as some new and useful ones added by __sketch.js__
+
+It also provides fast global access to useful math functions and constants and extends `random` to handle ranges and arrays. Check out the [wiki](https://github.com/soulwire/sketch.js/wiki/API) or the [source](https://github.com/soulwire/sketch.js/blob/master/js/sketch.js) for the full API.
 
 ###A Basic Example
 
-If you’ve used libraries like [Processing](http://processing.org/) and [Open Frameworks](http://www.openframeworks.cc/) before, [sketch.js](https://github.com/soulwire/sketch.js) will be especially quick to get going with. You can simply hook onto methods like `setup`, `draw` and `mousemove` to start playing:
+If you’ve used libraries like [Processing](http://processing.org/) and [Open Frameworks](http://www.openframeworks.cc/) before, __sketch.js__ will be especially quick to get going with. You can simply hook onto methods like `setup`, `draw` and `mousemove` to start playing:
 
 	var ctx = Sketch.create();
 	
@@ -38,7 +42,7 @@ The x and y properties are the mouse / touch coordinates relative to the window 
 		ctx.lineTo( e.x, e.y );
 	}
 	
-If you're supporting touches, just handle them - on the desktop, the 0th element will be the mouse.
+If you're supporting touches, just handle them - on the desktop, the 0th element will be the mouse so your code will work the same accross devices and platforms.
 
 	ctx.mousemove = function( e ) {
 		for ( var i = 0, n = e.touches.length; i < n; i++ ) {
@@ -46,7 +50,7 @@ If you're supporting touches, just handle them - on the desktop, the 0th element
 		}
 	}
 
-Touches and mouse position are stored in the sketch for access outside event handlers.
+Touches and mouse position are also stored in the sketch for access outside event handlers.
 
 	ctx.draw = function() {
 		for ( var i = 0, n = ctx.touches.length; i < n; i++ ) {
@@ -54,16 +58,22 @@ Touches and mouse position are stored in the sketch for access outside event han
 		}
 	}
 
-Events and the stored touches also contain the previous x and y values (`ox`, `oy`) and the deltas (`dx`, `dy`)
+Previous x and y values `ox`, `oy` and the deltas `dx`, `dy` are also sent in events and stored in the sketch
 
 	ctx.mousemove = function( e ) {
 		ctx.moveTo( e.ox, e.oy ); // or ctx.mouse.ox, ctx.mouse.oy
 		ctx.lineTo( e.x, e.y ); // or ctx.mouse.x, ctx.mouse.y
 	}
 
-Keys are names and have useful constants.
+All keys ennumerted and common function keys are mapped to constants.
 
 	ctx.keydown = function() {
 		if ( ctx.keys.SPACE ) ctx.reset();
 		if ( ctx.keys.C ) ctx.clear();
 	}
+	
+###Build
+
+If you modify the source and want to produce your own build, install [UglifyJS](https://github.com/mishoo/UglifyJS) with CLI then run the following command from the sketch.js directory.
+
+	uglifyjs -o js/sketch.min.js js/sketch.js
