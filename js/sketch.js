@@ -55,7 +55,7 @@ var Sketch = (function() {
         PI         : Math.PI,
         TWO_PI     : Math.PI * 2,
         HALF_PI    : Math.PI / 2,
-        QUATER_PI  : Math.PI / 4,
+        QUARTER_PI : Math.PI / 4,
 
         sin        : Math.sin,
         cos        : Math.cos,
@@ -114,7 +114,7 @@ var Sketch = (function() {
 
         // Stops the update / rendering process
         stop: function() {
-            
+
             cancelAnimationFrame( timeout );
             ctx.running = false;
         },
