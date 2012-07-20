@@ -108,6 +108,7 @@ var Sketch = (function() {
             if ( ctx.setup && !ctx.initialized ) ctx.setup();
             ctx.initialized = true;
             ctx.running = true;
+            ctx.now = +new Date();
             update();
         },
 
@@ -504,7 +505,7 @@ var Sketch = (function() {
         ctx.millis += ctx.dt;
         ctx.now = now;
 
-        if ( ctx.update ) ctx.update( ctx.millis, ctx.dt, ctx.now );
+        if ( ctx.update ) ctx.update( ctx.dt );
         if ( ctx.autoclear ) ctx.clear();
         if ( ctx.draw ) ctx.draw( ctx );
 
