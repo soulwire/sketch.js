@@ -166,7 +166,7 @@ var Sketch = (function() {
 
         switch ( options.type ) {
 
-            case Sketch.WEB_GL:
+            case WEB_GL:
 
                 try { ctx = canvas.getContext( 'webgl', options ); } catch (e) {}
                 try { ctx = ctx || canvas.getContext( 'experimental-webgl', options ); } catch (e) {}
@@ -174,7 +174,7 @@ var Sketch = (function() {
 
                 break;
 
-            case Sketch.CANVAS:
+            case CANVAS:
 
                 try { ctx = canvas.getContext( '2d', options ); } catch (e) {}
                 if ( !ctx ) throw 'Canvas not supported';

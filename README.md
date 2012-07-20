@@ -34,7 +34,7 @@ Or if you prefer the syntax, you can also pass all the methods you want to use d
 
 Mouse, touch and keyboard events are augmented for convenience and certain properties are also stored in the sketch for when you need them outside event handlers.
 
-The x and y properties are the mouse / touch coordinates relative to the window (clientX / clientY).
+The `x` and `y` properties represent the mouse or touch coordinates, relative to the window (clientX / clientY).
 
 	ctx.mousemove = function( e ) {
 		ctx.lineTo( e.x, e.y );
@@ -56,7 +56,7 @@ Touches and mouse position are also stored in the sketch for access outside even
 		}
 	}
 
-Previous x and y values `ox`, `oy` and the deltas `dx`, `dy` are also sent in events and stored in the sketch
+Previous `x` and `y` values (`ox` and `oy`) and the deltas (`dx` and `dy`) are also sent in events and stored in the sketch
 
 	ctx.mousemove = function( e ) {
 		ctx.moveTo( e.ox, e.oy ); // or ctx.mouse.ox, ctx.mouse.oy
