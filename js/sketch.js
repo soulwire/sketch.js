@@ -89,26 +89,31 @@ var Sketch = (function() {
     var api = {
 
         millis     : 0,   // Total running milliseconds
-        now        : 0,   // Current time in milliseconds
-        dt         : 0,   // Delta time between frames (milliseconds)
+        now        : NaN, // Current time in milliseconds
+        dt         : NaN, // Delta time between frames (milliseconds)
 
         keys       : {},  // Hash of currently pressed keys
 
         mouse      : { x:0, y:0, ox:0, oy:0, dx:0, dy:0 },
         touches    : [],
         dragging   : false,
+        running    : false,
 
         // Starts the update / rendering process
         start: function() {
 
-            if ( ctx.setup ) ctx.setup();
-            update();
+            if ( !ctx.running ) {
+                if ( ctx.setup ) ctx.setup();
+                ctx.running = true;
+                update();
+            }
         },
 
         // Stops the update / rendering process
         stop: function() {
-
+            
             cancelAnimationFrame( timeout );
+            ctx.running = false;
         },
 
         // Clears the current drawing context
