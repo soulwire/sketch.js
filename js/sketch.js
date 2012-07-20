@@ -501,7 +501,7 @@ var Sketch = (function() {
 
     function update( now ) {
 
-        ctx.dt = ( now = now || +new Date() ) - ctx.now;
+        ctx.dt = ( now = now || Date.now() ) - ctx.now;
         ctx.millis += ctx.dt;
         ctx.now = now;
 
