@@ -88,25 +88,27 @@ var Sketch = (function() {
     // Properties & methods mixed into ctx
     var api = {
 
-        millis     : 0,   // Total running milliseconds
-        now        : NaN, // Current time in milliseconds
-        dt         : NaN, // Delta time between frames (milliseconds)
+        millis      : 0,   // Total running milliseconds
+        now         : NaN, // Current time in milliseconds
+        dt          : NaN, // Delta time between frames (milliseconds)
 
-        keys       : {},  // Hash of currently pressed keys
+        keys        : {},  // Hash of currently pressed keys
 
-        mouse      : { x:0, y:0, ox:0, oy:0, dx:0, dy:0 },
-        touches    : [],
-        dragging   : false,
-        running    : false,
+        mouse       : { x:0, y:0, ox:0, oy:0, dx:0, dy:0 },
+        touches     : [],
+        initialized : false,
+        dragging    : false,
+        running     : false,
 
         // Starts the update / rendering process
         start: function() {
 
-            if ( !ctx.running ) {
-                if ( ctx.setup ) ctx.setup();
-                ctx.running = true;
-                update();
-            }
+            if ( ctx.running ) return;
+
+            if ( ctx.setup && !ctx.initialized ) ctx.setup();
+            ctx.initialized = true;
+            ctx.running = true;
+            update();
         },
 
         // Stops the update / rendering process
