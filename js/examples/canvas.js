@@ -96,7 +96,7 @@ demo.spawn = function( x, y ) {
 	particle.vy = cos( theta ) * force;
 
 	particles.push( particle );
-}
+};
 
 demo.update = function() {
 

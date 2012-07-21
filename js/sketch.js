@@ -36,6 +36,7 @@ var Sketch = (function() {
     // ----------------------------------------
 
     var ctx;
+    var counter = 0;
     var timeout = -1;
 
     // Default options
@@ -45,6 +46,7 @@ var Sketch = (function() {
         autostart  : true,
         autoclear  : true,
         container  : document.body,
+        interval   : 1,
         type       : CANVAS
 
     };
@@ -501,14 +503,18 @@ var Sketch = (function() {
 
     function update( now ) {
 
-        ctx.dt = ( now = now || Date.now() ) - ctx.now;
-        ctx.millis += ctx.dt;
-        ctx.now = now;
+        if ( !counter ) {
 
-        if ( ctx.update ) ctx.update( ctx.dt );
-        if ( ctx.autoclear ) ctx.clear();
-        if ( ctx.draw ) ctx.draw( ctx );
+            ctx.dt = ( now = now || Date.now() ) - ctx.now;
+            ctx.millis += ctx.dt;
+            ctx.now = now;
 
+            if ( ctx.update ) ctx.update( ctx.dt );
+            if ( ctx.autoclear ) ctx.clear();
+            if ( ctx.draw ) ctx.draw( ctx );
+        }
+
+        counter = ++counter % ctx.interval;
         timeout = requestAnimationFrame( update );
     }
 
