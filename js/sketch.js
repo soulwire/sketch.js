@@ -45,6 +45,7 @@ var Sketch = (function() {
         fullscreen : true,
         autostart  : true,
         autoclear  : true,
+        autopause  : true,
         container  : document.body,
         interval   : 1,
         type       : CANVAS
@@ -107,7 +108,17 @@ var Sketch = (function() {
 
             if ( ctx.running ) return;
 
-            if ( ctx.setup && !ctx.initialized ) ctx.setup();
+            if ( ctx.setup && !ctx.initialized ) {
+
+                if ( ctx.autopause ) {
+
+                    bind( window, 'focus', ctx.start );
+                    bind( window, 'blur', ctx.stop );
+                }
+
+                ctx.setup();
+            }
+
             ctx.initialized = true;
             ctx.running = true;
             ctx.now = Date.now();
