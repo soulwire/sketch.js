@@ -377,6 +377,7 @@ var Sketch = (function() {
             updateMouse( ctx.touches[0] );
 
             if ( ctx.touchstart ) ctx.touchstart( event );
+            if ( ctx.mousedown ) ctx.mousedown( event );
         }
 
         function touchmove( event ) {
@@ -398,6 +399,7 @@ var Sketch = (function() {
             else for ( var id in old ) if ( !event.touches[ id ] ) delete old[ id ];
 
             if ( ctx.touchend ) ctx.touchend( event );
+            if ( ctx.mouseup ) ctx.mouseup( event );
         }
 
         // Mouse events
@@ -425,6 +427,7 @@ var Sketch = (function() {
 
             ctx.touches = [ event ];
 
+            if ( ctx.touchstart ) ctx.touchstart( event );
             if ( ctx.mousedown ) ctx.mousedown( event );
         }
 
@@ -435,8 +438,8 @@ var Sketch = (function() {
 
             ctx.touches = [ event ];
 
-            if ( ctx.mousemove ) ctx.mousemove( event );
             if ( ctx.touchmove ) ctx.touchmove( event );
+            if ( ctx.mousemove ) ctx.mousemove( event );
         }
 
         function mouseout( event ) {
@@ -462,6 +465,7 @@ var Sketch = (function() {
 
             delete old[ 'mouse' ];
 
+            if ( ctx.touchend ) ctx.touchend( event );
             if ( ctx.mouseup ) ctx.mouseup( event );
         }
 
