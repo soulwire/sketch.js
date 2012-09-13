@@ -40,7 +40,7 @@ var demo = Sketch.create({
 			demo.moveTo( touch.ox, touch.oy );
 			demo.lineTo( touch.x, touch.y );
 			demo.stroke();
-		};
+		}
 	}
 });
 
