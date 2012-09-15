@@ -30,6 +30,7 @@ var Sketch = (function() {
     var GUID   = 0;
     var CANVAS = 'canvas';
     var WEB_GL = 'web-gl';
+    var DOM = 'dom';
 
     // ----------------------------------------
     // Members
@@ -206,6 +207,9 @@ var Sketch = (function() {
 
                 canvas = ctx = document.createElement( 'div' );
         }
+
+        // DOM type consistency
+        ctx.canvas = canvas;
 
         // ID & class can be useful
         canvas.className = 'sketch';
@@ -535,15 +539,17 @@ var Sketch = (function() {
 
     function resize( event ) {
 
+        var target = ctx.type === DOM ? ctx.style : ctx.canvas;
+
         if ( ctx.fullscreen ) {
 
-            ctx.height = ctx.canvas.height = window.innerHeight;
-            ctx.width = ctx.canvas.width = window.innerWidth;
+            ctx.height = target.height = window.innerHeight;
+            ctx.width = target.width = window.innerWidth;
 
         } else {
 
-            ctx.canvas.height = ctx.height;
-            ctx.canvas.width = ctx.width;
+            target.height = ctx.height;
+            target.width = ctx.width;
         }
 
         if ( ctx.resize ) ctx.resize();
@@ -557,6 +563,7 @@ var Sketch = (function() {
 
         CANVAS: CANVAS,
         WEB_GL: WEB_GL,
+        DOM: DOM,
 
         create: create
     };
