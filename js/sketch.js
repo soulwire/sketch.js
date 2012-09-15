@@ -30,7 +30,7 @@ var Sketch = (function() {
     var GUID   = 0;
     var CANVAS = 'canvas';
     var WEB_GL = 'web-gl';
-    var DOM = 'dom';
+    var DOM    = 'dom';
 
     // ----------------------------------------
     // Members
