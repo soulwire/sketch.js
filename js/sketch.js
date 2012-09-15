@@ -39,6 +39,7 @@ var Sketch = (function() {
     var ctx;
     var counter = 0;
     var timeout = -1;
+    var bindings = {};
 
     // Default options
     var defaults = {
@@ -139,6 +140,39 @@ var Sketch = (function() {
 
             if ( ctx.canvas )
                 ctx.canvas.width = ctx.canvas.width;
+        },
+
+        destroy: function() {
+
+            // Variable cache
+            var binding, type, list, prop, i, n;
+
+            // Stop update loop
+            ctx.stop();
+
+            // Remove event handlers
+            for ( type in bindings ) {
+                
+                list = bindings[ type ];
+
+                for ( i = 0, n = list.length; i < n; i++ ) {
+                    
+                    binding = list[ i ];
+                    unbind( binding.el, type, binding.fn );
+                }
+
+                delete bindings[ type ];
+            }
+
+            // Empty display list
+            ctx.container.removeChild( ctx.canvas );
+
+            // Delete all properties
+            for ( prop in ctx ) {
+                if ( ctx.hasOwnProperty( prop ) ) {
+                    delete ctx[ prop ];
+                }
+            }
         }
     };
 
@@ -146,31 +180,83 @@ var Sketch = (function() {
     // Helpers
     // ----------------------------------------
 
+    // Returns the browser specific even binding method
     var bind = (function() {
 
-        if ( window.addEventListener )
+        function remember( el, ev, fn ) {
 
-            return function( el, ev, fn ) { el.addEventListener( ev, fn, false ); };
+            if ( !bindings[ ev ] ) bindings[ ev ] = [];
+            bindings[ ev ].push({ el: el, fn: fn });
+        }
 
-        else if ( window.attachEvent )
+        if ( window.addEventListener ) {
 
-            return function( el, ev, fn ) { el.attachEvent( 'on' + ev, fn ); };
+            return function( el, ev, fn ) {
 
-        else el[ 'on' + ev ] = fn;
+                el.addEventListener( ev, fn, false );
+                remember( el, ev, fn );
+            };
+
+        } else if ( window.attachEvent ) {
+
+            return function( el, ev, fn ) {
+
+                el.attachEvent( 'on' + ev, fn );
+                remember( el, ev, fn );
+            };
+
+        } else {
+
+            return function( el, ev, fn ) {
+                
+                el[ 'on' + ev ] = fn;
+                remember( el, ev, fn );
+            }
+        }
 
     })();
 
+    // Returns the browser specific even unbinding method
     var unbind = (function() {
 
-        if ( window.removeEventListener )
+        function forget( el, ev, fn ) {
 
-            return function( el, ev, fn ) { el.removeEventListener( ev, fn, false ); };
+            if ( bindings[ ev ] ) {
 
-        else if ( window.detachEvent )
+                var binding;
 
-            return function( el, ev, fn ) { el.detachEvent( 'on' + ev, fn ); };
+                for ( var i = bindings[ ev ].length - 1; i >= 0; i-- ) {
+                    
+                    binding = bindings[ ev ][ i ];
 
-        else el[ 'on' + ev ] = null;
+                    if ( binding.el === el && binding.fn === fn ) {
+                        bindings[ ev ].splice( i, 1 );
+                    }
+                };
+            }
+        }
+
+        if ( window.removeEventListener ) {
+
+            return function( el, ev, fn ) {
+
+                el.removeEventListener( ev, fn, false );
+                forget( el, ev, fn );
+            };
+
+        } else if ( window.detachEvent ) {
+
+            return function( el, ev, fn ) {
+
+                el.detachEvent( 'on' + ev, fn );
+                forget( el, ev, fn );
+            };
+
+        } else {
+
+            el[ 'on' + ev ] = null;
+            forget( el, ev, fn );
+        }
 
     })();
 
