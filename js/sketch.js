@@ -40,6 +40,7 @@ var Sketch = (function() {
     var counter = 0;
     var timeout = -1;
     var bindings = {};
+    var instances = [];
 
     // Default options
     var defaults = {
@@ -147,6 +148,9 @@ var Sketch = (function() {
             // Variable cache
             var binding, type, list, prop, i, n;
 
+            // Remove from the global index
+            instances.splice( instances.indexOf( ctx ), 1 );
+
             // Stop update loop
             ctx.stop();
 
@@ -211,7 +215,7 @@ var Sketch = (function() {
                 
                 el[ 'on' + ev ] = fn;
                 remember( el, ev, fn );
-            }
+            };
         }
 
     })();
@@ -232,7 +236,7 @@ var Sketch = (function() {
                     if ( binding.el === el && binding.fn === fn ) {
                         bindings[ ev ].splice( i, 1 );
                     }
-                };
+                }
             }
         }
 
@@ -318,6 +322,10 @@ var Sketch = (function() {
         // Set initial dimensions
         resize();
 
+        // Add to global index
+        instances.push( ctx );
+
+        // Optionally trigger start after stack execution
         if ( ctx.autostart ) setTimeout( ctx.start, 0 );
 
         return ctx;
@@ -651,6 +659,7 @@ var Sketch = (function() {
         WEB_GL: WEB_GL,
         DOM: DOM,
 
+        instances: instances,
         create: create
     };
 
