@@ -135,6 +135,11 @@ var Sketch = (function() {
             ctx.running = false;
         },
 
+        // Toggles the update / rendering process
+        toggle: function() {
+            (ctx.running ? ctx.stop : ctx.start)();
+        },
+
         // Clears the current drawing context
         // TODO: Empty children here for non-canvas sketches?
         clear: function() {
