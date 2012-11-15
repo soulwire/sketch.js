@@ -10,6 +10,6 @@ When creating a sketch, you specify a _type_ (the default is `Sketch.CANVAS`) an
 
 It also provides fast global access to useful math functions and constants and extends `random` to handle ranges and arrays.
 
-For more information, check out the [getting started guide](https://github.com/soulwire/sketch.js/wiki/API), the [API](https://github.com/soulwire/sketch.js/wiki/API) or the full [source](https://github.com/soulwire/sketch.js/blob/master/js/sketch.js), as well as the examples in the [showcase](http://soulwire.github.com/sketch.js/).
+For more information, check out the [getting started guide](https://github.com/soulwire/sketch.js/wiki/Getting-Started), the [API](https://github.com/soulwire/sketch.js/wiki/API) or the full [source](https://github.com/soulwire/sketch.js/blob/master/js/sketch.js), as well as the examples in the [showcase](http://soulwire.github.com/sketch.js/).
 
 Have fun!
