@@ -1,71 +1,80 @@
 <html>
-	<head>
-		<title>sketch.js</title>
-		<link href='http://fonts.googleapis.com/css?family=Play:400,700' rel='stylesheet' type='text/css'>
-		<style type="text/css">
-
-			html, body {
-				font-family: 'Play', sans-serif;
-				background: #2b2b2b;
-				margin: 0;
-			}
-
-			#info {
-				position: absolute;
-				left: 10px;
-				top: 10px;
-			}
-
-			#info {
-				background: rgba(0,0,0,0.8);
-				padding: 12px 10px;
-				margin-bottom: 1px;
-				color: #fff;
-			}
-
-			#info h1 {
-				line-height: 22px;
-				font-weight: 300;
-				font-size: 18px;
-				margin: 0;
-			}
-
-			#info h2 {
-				line-height: 14px;
-				font-weight: 300;
-				font-size: 12px;
-				color: rgba(255,255,255,0.8);
-				margin: 0 0 6px 0;
-			}
-
-			#info a {
-				text-transform: uppercase;
-				text-decoration: none;
-				border-bottom: 1px dotted rgba(255,255,255,0.2);
-				margin-right: 4px;
-				line-height: 20px;
-				font-size: 10px;
-				color: rgba(255,255,255,0.5);
-			}
-
-			#info a:hover {
-				border-bottom: 1px dotted rgba(255,255,255,0.6);
-				color: rgba(255,255,255,1.0);
-			}
-
-		</style>
-	</head>
-	<body>
-		<article id="info">
-			<header>
-				<h1><strong>sketch.js</strong> demo</h1>
-				<h2>Spawn particles with your mouse</h2>
-			</header>
-			<a href="https://github.com/soulwire/sketch.js/zipball/master">Download</a>
-			<a href="https://github.com/soulwire/sketch.js">View on Github</a>
-		</article>
-		<div id="container"></div>
-		<script type="text/javascript" src="js/sketch.js"></script>
-		<script type="text/javascript" src="js/examples/canvas.js"></script>
-	</body>
+    <head>
+        <title>sketch.js</title>
+        <link rel="stylesheet" href="examples/css/main.css">
+    </head>
+    <body>
+        <header class="introduction">
+            <hgroup>
+                <h1>Sketch.js</h1>
+                <h2>Minimal JavaScript Creative Coding Framework</h2>
+            </hgroup>
+        </header>
+        <nav class="navigation">
+            <a href="https://github.com/soulwire/sketch.js">Github</a>
+            <a href="https://github.com/soulwire/sketch.js/archive/master.zip">Download</a>
+            <a href="https://github.com/soulwire/sketch.js/wiki/">Documentation</a>
+            <a href="https://github.com/soulwire/sketch.js/wiki/API">API</a>
+        </nav>
+        <section class="showcase">
+            <h3>Examples</h3>
+            <figure>
+                <a href="examples/drawing.html">
+                    <img src="examples/img/drawing.jpg">
+                    <figcaption>
+                        <strong>Multi-touch drawing</strong>
+                        <p>Basic example demonstrating how to set up a sketch and handle mouse / touch input</p>
+                    </figcaption>
+                </a>
+            </figure>
+            <figure>
+                <a href="examples/particles.html">
+                    <img src="examples/img/particles.jpg">
+                    <figcaption>
+                        <strong>Particles</strong>
+                        <p>Create a multi-touch particle toy with sketch.js</p>
+                    </figcaption>
+                </a>
+            </figure>
+            <figure>
+                <a href="http://soulwire.github.com/Plasmatic-Isosurface/">
+                    <img src="examples/img/plasma.jpg">
+                    <figcaption>
+                        <strong>Plasmatic Isosurface</strong>
+                        <p>An example using sketch.js in WebGL mode</p>
+                    </figcaption>
+                </a>
+            </figure>
+            <figure>
+                <a href="http://soulwire.github.com/Muscular-Hydrostats/">
+                    <img src="examples/img/tentacles.jpg">
+                    <figcaption>
+                        <strong>Muscular Hydrostats</strong>
+                        <p>An example using sketch.js in WebGL mode</p>
+                    </figcaption>
+                </a>
+            </figure>
+            <figure>
+                <a href="https://github.com/soulwire/Crystallisation">
+                    <img src="examples/img/crystallization.jpg">
+                    <figcaption>
+                        <strong>Crystallisation</strong>
+                        <p>An experiment which uses sketch.js with CoffeeScript</p>
+                    </figcaption>
+                </a>
+            </figure>
+            <figure>
+                <a href="http://lab.hakim.se/linjer/">
+                    <img src="examples/img/linjer.jpg">
+                    <figcaption>
+                        <strong>Linjer</strong>
+                        <p><a href="http://hakim.se/" target="_blank">Hakim El Hattab</a> used sketch.js in this awesome interactive experiment</p>
+                    </figcaption>
+                </a>
+            </figure>
+        </section>
+        <footer class="footer">
+            <p>Using sketch.js? Let me know: justin [at] soulwire.co.uk</p>
+        </footer>
+    </body>
 </html>

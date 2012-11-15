@@ -1,0 +1,181 @@
+
+@import url(http://fonts.googleapis.com/css?family=Quantico);
+
+html, body {
+
+    background: #f2f2f2;
+    overflow: hidden;
+    margin: 0;
+}
+
+/* Info */
+
+@-webkit-keyframes show-info {
+    0% { -webkit-transform: rotateY(120deg); }
+    100% { -webkit-transform: rotateY(0deg); }
+}
+
+@-moz-keyframes show-info {
+    0% { -moz-transform: rotateY(120deg); }
+    100% { -moz-transform: rotateY(0deg); }
+}
+
+@-ms-keyframes show-info {
+    0% { -ms-transform: rotateY(120deg); }
+    100% { -ms-transform: rotateY(0deg); }
+}
+
+@-o-keyframes show-info {
+    0% { -o-transform: rotateY(120deg); }
+    100% { -o-transform: rotateY(0deg); }
+}
+
+@keyframes show-info {
+    0% { transform: rotateY(120deg); }
+    100% { transform: rotateY(0deg); }
+}
+
+.info {
+
+    -webkit-transition: all 180ms ease-out;
+    -moz-transition: all 180ms ease-out;
+    -ms-transition: all 180ms ease-out;
+    -o-transition: all 180ms ease-out;
+    transition: all 180ms ease-out;
+
+    -webkit-transform-style: preserve-3d;
+    -moz-transform-style: preserve-3d;
+    -ms-transform-style: preserve-3d;
+    -o-transform-style: preserve-3d;
+    transform-style: preserve-3d;
+
+    -webkit-transform: perspective(800);
+    -moz-transform: perspective(800);
+    -ms-transform: perspective(800);
+    -o-transform: perspective(800);
+    transform: perspective(800);
+
+    font-family: 'Quantico', sans-serif;
+    position: absolute;
+    font-size: 12px;
+    opacity: 0.8;
+    color: #fff;
+    width: 240px;
+    left: 0px;
+    top: 20px;
+}
+
+.info:hover {
+
+    box-shadow: 0 0 0 4px rgba(255,255,255,0.05);
+    opacity: 1.0;
+}
+
+.info h1,
+.info h2,
+.info h3 {
+
+    line-height: 1;
+    margin: 5px 0;
+}
+
+.info a {
+
+    -webkit-transition: all 200ms ease-out;
+    -moz-transition: all 200ms ease-out;
+    -ms-transition: all 200ms ease-out;
+    -o-transition: all 200ms ease-out;
+    transition: all 200ms ease-out;
+
+    border-bottom: 1px dotted rgba(255,255,255,0.4);
+    text-decoration: none;
+    opacity: 0.6;
+    color: #fff;
+}
+
+.info a:hover {
+
+    opacity: 0.99;
+}
+
+.info .about, .info .more {
+
+    -webkit-transform-origin: 0% 50%;
+    -moz-transform-origin: 0% 50%;
+    -ms-transform-origin: 0% 50%;
+    -o-transform-origin: 0% 50%;
+    transform-origin: 0% 50%;
+
+    -webkit-transform: rotateY(120deg);
+    -moz-transform: rotateY(120deg);
+    -ms-transform: rotateY(120deg);
+    -o-transform: rotateY(120deg);
+    transform: rotateY(120deg);
+
+    margin-bottom: 1px;
+    background: rgba(0,0,0,0.8);
+    padding: 12px 15px 12px 20px;
+}
+
+.info .about {
+
+    -webkit-animation: show-info 500ms cubic-bezier(0.230, 1.000, 0.320, 1.000) 600ms 1 normal forwards;
+    -moz-animation: show-info 500ms cubic-bezier(0.230, 1.000, 0.320, 1.000) 600ms 1 normal forwards;
+    -ms-animation: show-info 500ms cubic-bezier(0.230, 1.000, 0.320, 1.000) 600ms 1 normal forwards;
+    -o-animation: show-info 500ms cubic-bezier(0.230, 1.000, 0.320, 1.000) 600ms 1 normal forwards;
+    animation: show-info 500ms cubic-bezier(0.230, 1.000, 0.320, 1.000) 600ms 1 normal forwards;
+
+    padding-bottom: 15px;
+}
+
+.info .about a {
+    
+    opacity: 0.9;
+}
+
+.info .about h1 {
+
+    letter-spacing: -1px;
+    font-weight: 300;
+    font-size: 19px;
+    opacity: 0.95;
+}
+
+.info .about h2 {
+
+    font-weight: 300;
+    font-size: 13px;
+    opacity: 0.8;
+}
+
+.info .about h3 {
+
+    text-transform: uppercase;
+    margin-top: 10px;
+    font-size: 11px;
+}
+
+.info .about h3:before {
+
+    margin-right: 2px;
+    font-size: 14px;
+    content: '\203A';
+}
+
+.info .more {
+
+    -webkit-animation: show-info 500ms cubic-bezier(0.230, 1.000, 0.320, 1.000) 500ms 1 normal forwards;
+    -moz-animation: show-info 500ms cubic-bezier(0.230, 1.000, 0.320, 1.000) 500ms 1 normal forwards;
+    -ms-animation: show-info 500ms cubic-bezier(0.230, 1.000, 0.320, 1.000) 500ms 1 normal forwards;
+    -o-animation: show-info 500ms cubic-bezier(0.230, 1.000, 0.320, 1.000) 500ms 1 normal forwards;
+    animation: show-info 500ms cubic-bezier(0.230, 1.000, 0.320, 1.000) 500ms 1 normal forwards;
+
+    padding: 5px 15px 10px 20px;
+}
+
+.info .more a {
+    
+    text-transform: uppercase;
+    margin-right: 10px;
+    font-size: 10px;
+}​
