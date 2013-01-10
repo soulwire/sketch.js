@@ -51,7 +51,8 @@ var Sketch = (function() {
         autopause  : true,
         container  : document.body,
         interval   : 1,
-        type       : CANVAS
+        type       : CANVAS,
+        retina     : false
 
     };
 
@@ -148,8 +149,13 @@ var Sketch = (function() {
         // TODO: Empty children here for non-canvas sketches?
         clear: function() {
 
-            if ( ctx.canvas )
+            if ( ctx.canvas ) {
                 ctx.canvas.width = ctx.canvas.width;
+
+                if ( ctx.retina && window.devicePixelRatio ) {
+                  ctx.scale( window.devicePixelRatio, window.devicePixelRatio );
+                }
+            }
         },
 
         destroy: function() {
@@ -653,6 +659,23 @@ var Sketch = (function() {
 
             target.height = ctx.height;
             target.width = ctx.width;
+        }
+
+        if ( ctx.retina &&
+             ctx.type === CANVAS &&
+             window.devicePixelRatio ) {
+
+            var cssPxHeight = target.height;
+            var cssPxWidth = target.width;
+
+            // The 2D Context draws into the real device pixels.
+            ctx.canvas.height = cssPxHeight * window.devicePixelRatio;
+            ctx.canvas.width = cssPxWidth * window.devicePixelRatio;
+            ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+
+            // The DOM element retains pre-retina size in CSS pixels.
+            ctx.canvas.style.cssText = "height: " + cssPxHeight + "px; width: " + cssPxWidth + "px;";
+
         }
 
         if ( ctx.resize ) ctx.resize();
