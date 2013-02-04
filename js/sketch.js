@@ -623,11 +623,13 @@ var Sketch = (function() {
     // Event handlers
     // ----------------------------------------
 
-    function update( now ) {
+    function update() {
 
         if ( !counter ) {
 
-            ctx.dt = ( now = now || Date.now() ) - ctx.now;
+            var now = Date.now();
+
+            ctx.dt = now - ctx.now;
             ctx.millis += ctx.dt;
             ctx.now = now;
 
