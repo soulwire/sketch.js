@@ -49,6 +49,7 @@ var Sketch = (function() {
         autostart  : true,
         autoclear  : true,
         autopause  : true,
+        autoresize : true,
         container  : document.body,
         interval   : 1,
         type       : CANVAS
@@ -282,8 +283,9 @@ var Sketch = (function() {
 
         options = extend( options || {}, defaults );
 
-        var id = 'sketch-' + GUID++;
-        var canvas = document.createElement( 'canvas' );
+        var id = 'sketch-' + GUID++,
+            hasCustomCanvas = options.hasOwnProperty('canvas'),
+            canvas = hasCustomCanvas ? options['canvas'] : document.createElement( 'canvas' );
 
         switch ( options.type ) {
 
@@ -305,6 +307,7 @@ var Sketch = (function() {
             default:
 
                 canvas = ctx = document.createElement( 'div' );
+
         }
 
         // DOM type consistency
@@ -312,9 +315,16 @@ var Sketch = (function() {
 
         // ID & class can be useful
         canvas.className = 'sketch';
-        canvas.id = id;
 
-        options.container.appendChild( canvas );
+        if(!hasCustomCanvas) {
+        
+            options.container.appendChild( canvas );
+            if(!options.hasOwnProperty('autoresize')) options.autoresize = defaults.autoresize;
+            canvas.id = id;
+
+        } else {
+            options.autoresize = false;
+        }
 
         // Mix globals into the window object
         extend( self, globals );
@@ -328,8 +338,8 @@ var Sketch = (function() {
         // Bind event handlers
         bindEvents();
 
-        // Set initial dimensions
-        resize();
+        // Set initial dimension (only if `autoresize` is `true`)
+        if(options.autoresize) resize();
 
         // Add to global index
         instances.push( ctx );
@@ -616,7 +626,8 @@ var Sketch = (function() {
         bind( document, 'keydown', keydown );
         bind( document, 'keyup', keyup );
 
-        bind( window, 'resize', resize );
+        // Only binds window resize if `autoresize` is set to `true`
+        if(defaults.autosize) bind( window, 'resize', resize );
     }
 
     // ----------------------------------------
