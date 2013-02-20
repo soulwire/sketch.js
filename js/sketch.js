@@ -389,6 +389,21 @@ var Sketch = (function() {
         return copy;
     }
 
+    // Replaces array contents, maintaining the original object
+    function displace( array, contents ) {
+
+        // we could use `a.splice.apply( a, [ 0, a.length ].concat( b ) )`
+        // but contents could be a `touchlist` and we need to flatten it
+
+        array.length = 0;
+
+        for ( var i = 0, n = contents.length; i < n; i++ )
+            
+            array[i] = contents[i];
+
+        return array;
+    }
+
     // Sets up sketch mouse & keyboard events
     function bindEvents() {
 
@@ -490,7 +505,7 @@ var Sketch = (function() {
             event.preventDefault();
 
             event = augment( event );
-            ctx.touches = event.touches;
+            displace( ctx.touches, event.touches );
             updateMouse( ctx.touches[0] );
 
             if ( ctx.touchstart ) ctx.touchstart( event );
@@ -500,7 +515,7 @@ var Sketch = (function() {
         function touchmove( event ) {
 
             event = augment( event );
-            ctx.touches = event.touches;
+            displace( ctx.touches, event.touches );
             updateMouse( ctx.touches[0] );
 
             if ( ctx.touchmove ) ctx.touchmove( event );
@@ -542,7 +557,7 @@ var Sketch = (function() {
                 ctx.dragging = true;
             }
 
-            ctx.touches = [ event ];
+            displace( ctx.touches, event );
 
             if ( ctx.touchstart ) ctx.touchstart( event );
             if ( ctx.mousedown ) ctx.mousedown( event );
@@ -553,7 +568,7 @@ var Sketch = (function() {
             event = augment( event );
             updateMouse( event );
 
-            ctx.touches = [ event ];
+            displace( ctx.touches, event );
 
             if ( ctx.touchmove ) ctx.touchmove( event );
             if ( ctx.mousemove ) ctx.mousemove( event );
@@ -627,7 +642,7 @@ var Sketch = (function() {
         bind( document, 'keyup', keyup );
 
         // Only binds window resize if `autoresize` is set to `true`
-        if(defaults.autosize) bind( window, 'resize', resize );
+        if( defaults.autosize ) bind( window, 'resize', resize );
     }
 
     // ----------------------------------------

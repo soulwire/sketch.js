@@ -25,7 +25,7 @@
         <script src="../js/sketch.js"></script>
         <script>
 
-        var COLOURS = [ '#60F0C0', '#FFFFFF', '#F0D442' ];
+        var COLOURS = [ '#E3EB64', '#A7EBCA', '#FFFFFF', '#D8EBA7', '#868E80' ];
         var radius = 0;
 
         var demo = Sketch.create({
@@ -59,7 +59,7 @@
 
                     demo.lineCap = 'round';
                     demo.lineJoin = 'round';
-                    demo.fillStyle = demo.strokeStyle = COLOURS[ 2+i % COLOURS.length ];
+                    demo.fillStyle = demo.strokeStyle = COLOURS[ i % COLOURS.length ];
                     demo.lineWidth = radius;
 
                     demo.beginPath();
