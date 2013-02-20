@@ -132,6 +132,7 @@ figure figcaption strong {
 
 figure figcaption p {
 
+	text-decoration: none;
 	opacity: 0.8;
 }
 
