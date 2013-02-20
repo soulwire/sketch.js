@@ -397,9 +397,9 @@ var Sketch = (function() {
 
         array.length = 0;
 
-        for ( var i = 0, n = contents.length; i < n; i++ )
-            
+        for ( var i = 0, n = contents.length; i < n; i++ ) {
             array[i] = contents[i];
+        }
 
         return array;
     }
@@ -557,7 +557,7 @@ var Sketch = (function() {
                 ctx.dragging = true;
             }
 
-            displace( ctx.touches, event );
+            displace( ctx.touches, [ event ] );
 
             if ( ctx.touchstart ) ctx.touchstart( event );
             if ( ctx.mousedown ) ctx.mousedown( event );
@@ -568,7 +568,7 @@ var Sketch = (function() {
             event = augment( event );
             updateMouse( event );
 
-            displace( ctx.touches, event );
+            displace( ctx.touches, [ event ] );
 
             if ( ctx.touchmove ) ctx.touchmove( event );
             if ( ctx.mousemove ) ctx.mousemove( event );
