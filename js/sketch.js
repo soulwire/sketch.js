@@ -670,13 +670,22 @@ var Sketch = (function() {
 
         if ( !ctx.autoresize ) return;
 
+        var aspect_ratio, num_pixels, new_height;
         var target = ctx.type === DOM ? ctx.style : ctx.canvas;
-
+        
         if ( ctx.fullscreen ) {
-
-            ctx.height = target.height = window.innerHeight;
-            ctx.width = target.width = window.innerWidth;
-
+            num_pixels = window.innerWidth * window.innerHeight;
+            if (ctx.max_pixels && num_pixels > ctx.max_pixels){
+                aspect_ratio = window.innerWidth / window.innerHeight;
+                new_height = Math.sqrt(ctx.max_pixels / aspect_ratio);
+                ctx.height = target.height = new_height;
+                ctx.width  = target.width  = new_height * aspect_ratio;
+                target.style.height = window.innerHeight + 'px';
+                target.style.width = window.innerWidth + 'px';
+            } else {
+                ctx.height = target.height = window.innerHeight;
+                ctx.width  = target.width  = window.innerWidth;
+            }
         } else {
 
             target.height = ctx.height;
