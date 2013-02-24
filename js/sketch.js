@@ -640,9 +640,7 @@ var Sketch = (function() {
 
         bind( document, 'keydown', keydown );
         bind( document, 'keyup', keyup );
-
-        // Only binds window resize if `autoresize` is set to `true`
-        if( defaults.autosize ) bind( window, 'resize', resize );
+        bind( window, 'resize', resize );
     }
 
     // ----------------------------------------
@@ -669,6 +667,8 @@ var Sketch = (function() {
     }
 
     function resize( event ) {
+
+        if ( !ctx.autoresize ) return;
 
         var target = ctx.type === DOM ? ctx.style : ctx.canvas;
 
