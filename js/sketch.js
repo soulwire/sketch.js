@@ -476,7 +476,7 @@ var Sketch = (function() {
                     o = old[i] || touch;
 
                     touch.dx = touch.x - o.x;
-                    touch.dy = touch.y - o.x;
+                    touch.dy = touch.y - o.y;
 
                     touch.ox = o.x;
                     touch.oy = o.y;
