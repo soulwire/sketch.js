@@ -147,14 +147,18 @@ var Sketch = (function() {
         },
 
         // Clears the current drawing context
-        // TODO: Empty children here for non-canvas sketches?
         clear: function() {
 
-            if ( ctx.canvas ) {
+            if ( ctx.type === Sketch.CANVAS || ctx.type === Sketch.WEB_GL ) {
                 ctx.canvas.width = ctx.canvas.width;
 
                 if ( ctx.retina && window.devicePixelRatio ) {
                   ctx.scale( window.devicePixelRatio, window.devicePixelRatio );
+                }
+            } else {
+                var children = ctx.canvas.childNodes;
+                for (var i = 0, len = children.length; i < len; i++) {
+                    children[i].remove();
                 }
             }
         },
@@ -172,11 +176,11 @@ var Sketch = (function() {
 
             // Remove event handlers
             for ( type in bindings ) {
-                
+
                 list = bindings[ type ];
 
                 for ( i = 0, n = list.length; i < n; i++ ) {
-                    
+
                     binding = list[ i ];
                     unbind( binding.el, type, binding.fn );
                 }
@@ -323,7 +327,7 @@ var Sketch = (function() {
         canvas.className = 'sketch';
 
         if(!hasCustomCanvas) {
-        
+
             options.container.appendChild( canvas );
             if(!options.hasOwnProperty('autoresize')) options.autoresize = defaults.autoresize;
             canvas.id = id;
@@ -678,7 +682,7 @@ var Sketch = (function() {
 
         var aspect_ratio, num_pixels, new_height;
         var target = ctx.type === DOM ? ctx.style : ctx.canvas;
-        
+
         if ( ctx.fullscreen ) {
             num_pixels = window.innerWidth * window.innerHeight;
             if (ctx.max_pixels && num_pixels > ctx.max_pixels){
