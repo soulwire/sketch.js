@@ -149,16 +149,18 @@ var Sketch = (function() {
         // Clears the current drawing context
         clear: function() {
 
-            if ( ctx.type === Sketch.CANVAS || ctx.type === Sketch.WEB_GL ) {
+            if ( ctx.type === CANVAS || ctx.type === WEB_GL ) {
+
+                // wipes the canvas
                 ctx.canvas.width = ctx.canvas.width;
 
                 if ( ctx.retina && window.devicePixelRatio ) {
                   ctx.scale( window.devicePixelRatio, window.devicePixelRatio );
                 }
-            } else {
+            } else if ( ctx.type === DOM ) {
                 var children = ctx.canvas.childNodes;
                 for (var i = 0, len = children.length; i < len; i++) {
-                    children[i].remove();
+                    children[ i ].remove();
                 }
             }
         },
@@ -232,7 +234,7 @@ var Sketch = (function() {
         } else {
 
             return function( el, ev, fn ) {
-                
+
                 el[ 'on' + ev ] = fn;
                 remember( el, ev, fn );
             };
@@ -250,7 +252,7 @@ var Sketch = (function() {
                 var binding;
 
                 for ( var i = bindings[ ev ].length - 1; i >= 0; i-- ) {
-                    
+
                     binding = bindings[ ev ][ i ];
 
                     if ( binding.el === el && binding.fn === fn ) {
@@ -315,7 +317,7 @@ var Sketch = (function() {
                 break;
 
             default:
-
+                options.type = DOM;
                 canvas = ctx = document.createElement( 'div' );
 
         }
