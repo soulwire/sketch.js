@@ -147,14 +147,20 @@ var Sketch = (function() {
         },
 
         // Clears the current drawing context
-        // TODO: Empty children here for non-canvas sketches?
         clear: function() {
 
-            if ( ctx.canvas ) {
+            if ( ctx.type === CANVAS || ctx.type === WEB_GL ) {
+
+                // wipes the canvas
                 ctx.canvas.width = ctx.canvas.width;
 
                 if ( ctx.retina && window.devicePixelRatio ) {
                   ctx.scale( window.devicePixelRatio, window.devicePixelRatio );
+                }
+            } else if ( ctx.type === DOM ) {
+                var children = ctx.canvas.childNodes;
+                for (var i = 0, len = children.length; i < len; i++) {
+                    children[ i ].remove();
                 }
             }
         },
@@ -172,11 +178,11 @@ var Sketch = (function() {
 
             // Remove event handlers
             for ( type in bindings ) {
-                
+
                 list = bindings[ type ];
 
                 for ( i = 0, n = list.length; i < n; i++ ) {
-                    
+
                     binding = list[ i ];
                     unbind( binding.el, type, binding.fn );
                 }
@@ -228,7 +234,7 @@ var Sketch = (function() {
         } else {
 
             return function( el, ev, fn ) {
-                
+
                 el[ 'on' + ev ] = fn;
                 remember( el, ev, fn );
             };
@@ -246,7 +252,7 @@ var Sketch = (function() {
                 var binding;
 
                 for ( var i = bindings[ ev ].length - 1; i >= 0; i-- ) {
-                    
+
                     binding = bindings[ ev ][ i ];
 
                     if ( binding.el === el && binding.fn === fn ) {
@@ -311,7 +317,7 @@ var Sketch = (function() {
                 break;
 
             default:
-
+                options.type = DOM;
                 canvas = ctx = document.createElement( 'div' );
 
         }
@@ -323,7 +329,7 @@ var Sketch = (function() {
         canvas.className = 'sketch';
 
         if(!hasCustomCanvas) {
-        
+
             options.container.appendChild( canvas );
             if(!options.hasOwnProperty('autoresize')) options.autoresize = defaults.autoresize;
             canvas.id = id;
@@ -476,7 +482,7 @@ var Sketch = (function() {
                     o = old[i] || touch;
 
                     touch.dx = touch.x - o.x;
-                    touch.dy = touch.y - o.x;
+                    touch.dy = touch.y - o.y;
 
                     touch.ox = o.x;
                     touch.oy = o.y;
@@ -678,7 +684,7 @@ var Sketch = (function() {
 
         var aspect_ratio, num_pixels, new_height;
         var target = ctx.type === DOM ? ctx.style : ctx.canvas;
-        
+
         if ( ctx.fullscreen ) {
             num_pixels = window.innerWidth * window.innerHeight;
             if (ctx.max_pixels && num_pixels > ctx.max_pixels){
