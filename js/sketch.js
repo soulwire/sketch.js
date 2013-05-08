@@ -22,6 +22,8 @@
  */
 
 var Sketch = (function() {
+	
+	"use strict";
 
     // ----------------------------------------
     // CONSTANTS
@@ -732,7 +734,7 @@ var Sketch = (function() {
         create: create
     };
 
-})();
+});
 
 // ----------------------------------------
 // Useful polyfills
