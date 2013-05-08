@@ -22,6 +22,8 @@
  */
 
 var Sketch = (function() {
+    
+    "use strict";
 
     // ----------------------------------------
     // CONSTANTS
@@ -36,9 +38,7 @@ var Sketch = (function() {
     // Members
     // ----------------------------------------
 
-    var ctx;
-    var counter = 0;
-    var timeout = -1;
+    
     var bindings = {};
     var instances = [];
 
@@ -97,105 +97,7 @@ var Sketch = (function() {
         }
     };
 
-    // Properties & methods mixed into ctx
-    var api = {
-
-        millis      : 0,   // Total running milliseconds
-        now         : NaN, // Current time in milliseconds
-        dt          : NaN, // Delta time between frames (milliseconds)
-
-        keys        : {},  // Hash of currently pressed keys
-
-        mouse       : { x:0, y:0, ox:0, oy:0, dx:0, dy:0 },
-        touches     : [],
-        initialized : false,
-        dragging    : false,
-        running     : false,
-
-        // Starts the update / rendering process
-        start: function() {
-
-            if ( ctx.running ) return;
-
-            if ( ctx.setup && !ctx.initialized ) {
-
-                if ( ctx.autopause ) {
-
-                    bind( window, 'focus', ctx.start );
-                    bind( window, 'blur', ctx.stop );
-                }
-
-                ctx.setup();
-            }
-
-            ctx.initialized = true;
-            ctx.running = true;
-            ctx.now = Date.now();
-            update();
-        },
-
-        // Stops the update / rendering process
-        stop: function() {
-
-            cancelAnimationFrame( timeout );
-            ctx.running = false;
-        },
-
-        // Toggles the update / rendering process
-        toggle: function() {
-            (ctx.running ? ctx.stop : ctx.start)();
-        },
-
-        // Clears the current drawing context
-        // TODO: Empty children here for non-canvas sketches?
-        clear: function() {
-
-            if ( ctx.canvas ) {
-                ctx.canvas.width = ctx.canvas.width;
-
-                if ( ctx.retina && window.devicePixelRatio ) {
-                  ctx.scale( window.devicePixelRatio, window.devicePixelRatio );
-                }
-            }
-        },
-
-        destroy: function() {
-
-            // Variable cache
-            var binding, type, list, prop, i, n;
-
-            // Remove from the global index
-            instances.splice( instances.indexOf( ctx ), 1 );
-
-            // Stop update loop
-            ctx.stop();
-
-            // Remove event handlers
-            for ( type in bindings ) {
-                
-                list = bindings[ type ];
-
-                for ( i = 0, n = list.length; i < n; i++ ) {
-                    
-                    binding = list[ i ];
-                    unbind( binding.el, type, binding.fn );
-                }
-
-                delete bindings[ type ];
-            }
-
-            // Empty display list
-            ctx.container.removeChild( ctx.canvas );
-
-            // Delete all properties
-            for ( prop in ctx ) {
-                if ( ctx.hasOwnProperty( prop ) ) {
-                    delete ctx[ prop ];
-                }
-            }
-        }
-    };
-
+   
     // ----------------------------------------
     // Helpers
     // ----------------------------------------
@@ -287,6 +189,110 @@ var Sketch = (function() {
     // Sets up & returns a new sketch
     function create( options ) {
 
+        var ctx;
+        var counter = 0;
+        var timeout = -1;
+        
+        // Properties & methods mixed into ctx
+        var api = {
+
+            millis      : 0,   // Total running milliseconds
+            now         : NaN, // Current time in milliseconds
+            dt          : NaN, // Delta time between frames (milliseconds)
+
+            keys        : {},  // Hash of currently pressed keys
+
+            mouse       : { x:0, y:0, ox:0, oy:0, dx:0, dy:0 },
+            touches     : [],
+            initialized : false,
+            dragging    : false,
+            running     : false,
+
+            // Starts the update / rendering process
+            start: function() {
+
+                if ( ctx.running ) return;
+
+                if ( ctx.setup && !ctx.initialized ) {
+
+                    if ( ctx.autopause ) {
+
+                        bind( window, 'focus', ctx.start );
+                        bind( window, 'blur', ctx.stop );
+                    }
+
+                    ctx.setup();
+                }
+
+                ctx.initialized = true;
+                ctx.running = true;
+                ctx.now = Date.now();
+                update();
+            },
+
+            // Stops the update / rendering process
+            stop: function() {
+
+                cancelAnimationFrame( timeout );
+                ctx.running = false;
+            },
+
+            // Toggles the update / rendering process
+            toggle: function() {
+                (ctx.running ? ctx.stop : ctx.start)();
+            },
+
+            // Clears the current drawing context
+            // TODO: Empty children here for non-canvas sketches?
+            clear: function() {
+
+                if ( ctx.canvas ) {
+                    ctx.canvas.width = ctx.canvas.width;
+
+                    if ( ctx.retina && window.devicePixelRatio ) {
+                      ctx.scale( window.devicePixelRatio, window.devicePixelRatio );
+                    }
+                }
+            },
+
+            destroy: function() {
+
+                // Variable cache
+                var binding, type, list, prop, i, n;
+
+                // Remove from the global index
+                instances.splice( instances.indexOf( ctx ), 1 );
+
+                // Stop update loop
+                ctx.stop();
+
+                // Remove event handlers
+                for ( type in bindings ) {
+                    
+                    list = bindings[ type ];
+
+                    for ( i = 0, n = list.length; i < n; i++ ) {
+                        
+                        binding = list[ i ];
+                        unbind( binding.el, type, binding.fn );
+                    }
+
+                    delete bindings[ type ];
+                }
+
+                // Empty display list
+                ctx.container.removeChild( ctx.canvas );
+
+                // Delete all properties
+                for ( prop in ctx ) {
+                    if ( ctx.hasOwnProperty( prop ) ) {
+                        delete ctx[ prop ];
+                    }
+                }
+            }
+        };
+
+        
         options = extend( options || {}, defaults );
 
         var id = 'sketch-' + GUID++,
@@ -353,370 +359,372 @@ var Sketch = (function() {
         // Optionally trigger start after stack execution
         if ( ctx.autostart ) setTimeout( ctx.start, 0 );
 
-        return ctx;
-    }
-
-    // Soft object merge
-    function extend( target, source ) {
-
-        for ( var prop in source ) {
-
-            if ( !target.hasOwnProperty( prop ) ) {
-                target[ prop ] = source[ prop ];
-            }
-        }
-
-        return target;
-    }
-
-    // Shallow clones a given object
-    function clone( obj ) {
-
-        var copy = {};
-
-        function getCallback( method, context ) {
-
-            return function() {
-                method.call( context, arguments );
-            };
-        }
-
-        for ( var prop in obj ) {
-
-            if ( typeof obj[ prop ] === 'function' )
-
-                copy[ prop ] = getCallback( obj[ prop ], obj );
-
-            else
-
-                copy[ prop ] = obj[ prop ];
-        }
-
-        return copy;
-    }
-
-    // Replaces array contents, maintaining the original object
-    function displace( array, contents ) {
-
-        // we could use `a.splice.apply( a, [ 0, a.length ].concat( b ) )`
-        // but contents could be a `touchlist` and we need to flatten it
-
-        array.length = 0;
-
-        for ( var i = 0, n = contents.length; i < n; i++ ) {
-            array[i] = contents[i];
-        }
-
-        return array;
-    }
-
-    // Sets up sketch mouse & keyboard events
-    function bindEvents() {
-
-        var keynames = {
-            8:  'BACKSPACE',
-            9:  'TAB',
-            13: 'ENTER',
-            16: 'SHIFT',
-            27: 'ESCAPE',
-            32: 'SPACE',
-            37: 'LEFT',
-            38: 'UP',
-            39: 'RIGHT',
-            40: 'DOWN'
-        };
-
-        // Explicitly set all keys to false initially
-        for ( var name in keynames ) {
-            api.keys[ keynames[ name ] ] = false;
-        }
-
-        // maps a key code to a key name
-        function map( code ) {
-            return keynames[ code ] || String.fromCharCode( code );
-        }
-
-        // Update mouse position
-        function updateMouse( coord ) {
-
-            ctx.mouse.ox = ctx.mouse.x;
-            ctx.mouse.oy = ctx.mouse.y;
-
-            ctx.mouse.x = coord.x;
-            ctx.mouse.y = coord.y;
-
-            ctx.mouse.dx = ctx.mouse.x - ctx.mouse.ox;
-            ctx.mouse.dy = ctx.mouse.y - ctx.mouse.oy;
-        }
-
-        var old = {};
-
-        // Augments the native mouse event
-        function augment( event ) {
-
-            var o, e = clone( event );
-            e.original = event;
-
-            // Compute container offset
-            for ( var el = ctx.canvas, ox = 0, oy = 0; el; el = el.offsetParent ) {
-
-                ox += el.offsetLeft;
-                oy += el.offsetTop;
-            }
-
-            // Normalise touches / mouse
-            if ( e.touches && !!e.touches.length ) {
-
-                for ( var i = e.touches.length - 1, touch; i >= 0; i-- ) {
-
-                    touch = e.touches[i];
-                    touch.x = touch.pageX - ox;
-                    touch.y = touch.pageY - oy;
-
-                    o = old[i] || touch;
-
-                    touch.dx = touch.x - o.x;
-                    touch.dy = touch.y - o.x;
-
-                    touch.ox = o.x;
-                    touch.oy = o.y;
-
-                    old[i] = clone( touch );
-                }
-
-            } else {
-
-                e.x = e.pageX - ox;
-                e.y = e.pageY - oy;
-
-                o = old[ 'mouse' ] || e;
-
-                e.dx = e.x - o.x;
-                e.dy = e.y - o.y;
-
-                e.ox = o.x;
-                e.oy = o.y;
-
-                old[ 'mouse' ] = e;
-            }
-
-            return e;
-        }
-
-        // Touch events
-
-        function touchstart( event ) {
-
-            // Prevent scrolling (should this be optional?)
-            event.preventDefault();
-
-            event = augment( event );
-            displace( ctx.touches, event.touches );
-            updateMouse( ctx.touches[0] );
-
-            if ( ctx.touchstart ) ctx.touchstart( event );
-            if ( ctx.mousedown ) ctx.mousedown( event );
-        }
-
-        function touchmove( event ) {
-
-            event = augment( event );
-            displace( ctx.touches, event.touches );
-            updateMouse( ctx.touches[0] );
-
-            if ( ctx.touchmove ) ctx.touchmove( event );
-            if ( ctx.mousemove ) ctx.mousemove( event );
-        }
-
-        function touchend( event ) {
-
-            event = augment( event );
-
-            // Cleanup ended touches
-            if ( !event.touches.length ) old = {};
-            else for ( var id in old ) if ( !event.touches[ id ] ) delete old[ id ];
-
-            if ( ctx.touchend ) ctx.touchend( event );
-            if ( ctx.mouseup ) ctx.mouseup( event );
-        }
-
-        // Mouse events
-
-        function mouseover( event ) {
-
-            event = augment( event );
-            if ( ctx.mouseover ) ctx.mouseover( event );
-        }
-
-        function mousedown( event ) {
-
-            event = augment( event );
-
-            if ( !ctx.dragging ) {
-
-                unbind( ctx.canvas, 'mousemove', mousemove );
-                unbind( ctx.canvas, 'mouseup', mouseup );
-
-                bind( document, 'mousemove', mousemove );
-                bind( document, 'mouseup', mouseup );
-
-                ctx.dragging = true;
-            }
-
-            displace( ctx.touches, [ event ] );
-
-            if ( ctx.touchstart ) ctx.touchstart( event );
-            if ( ctx.mousedown ) ctx.mousedown( event );
-        }
-
-        function mousemove( event ) {
-
-            event = augment( event );
-            updateMouse( event );
-
-            displace( ctx.touches, [ event ] );
-
-            if ( ctx.touchmove ) ctx.touchmove( event );
-            if ( ctx.mousemove ) ctx.mousemove( event );
-        }
-
-        function mouseout( event ) {
-
-            event = augment( event );
-            if ( ctx.mouseout ) ctx.mouseout( event );
-        }
-
-        function mouseup( event ) {
-
-            event = augment( event );
-
-            if ( ctx.dragging ) {
-
-                unbind( document, 'mousemove', mousemove );
-                unbind( document, 'mouseup', mouseup );
-
-                bind( ctx.canvas, 'mousemove', mousemove );
-                bind( ctx.canvas, 'mouseup', mouseup );
-
-                ctx.dragging = false;
-            }
-
-            delete old[ 'mouse' ];
-
-            if ( ctx.touchend ) ctx.touchend( event );
-            if ( ctx.mouseup ) ctx.mouseup( event );
-        }
-
-        function click( event ) {
-
-            event = augment( event );
-            if ( ctx.click ) ctx.click( event );
-        }
-
-        // Keyboard events
-
-        function keydown( event ) {
-
-            ctx.keys[ map( event.keyCode ) ] = true;
-            ctx.keys[ event.keyCode ] = true;
-
-            if ( ctx.keydown ) ctx.keydown( event );
-        }
-
-        function keyup( event ) {
-
-            ctx.keys[ map( event.keyCode ) ] = false;
-            ctx.keys[ event.keyCode ] = false;
-
-            if ( ctx.keyup ) ctx.keyup( event );
-        }
-
-        // Bind to context
-
-        bind( ctx.canvas, 'touchstart', touchstart );
-        bind( ctx.canvas, 'touchmove', touchmove );
-        bind( ctx.canvas, 'touchend', touchend );
-
-        bind( ctx.canvas, 'mouseover', mouseover );
-        bind( ctx.canvas, 'mousedown', mousedown );
-        bind( ctx.canvas, 'mousemove', mousemove );
-        bind( ctx.canvas, 'mouseout', mouseout );
-        bind( ctx.canvas, 'mouseup', mouseup );
-        bind( ctx.canvas, 'click', click );
-
-        bind( document, 'keydown', keydown );
-        bind( document, 'keyup', keyup );
-        bind( window, 'resize', resize );
-    }
-
-    // ----------------------------------------
-    // Event handlers
-    // ----------------------------------------
-
-    function update() {
-
-        if ( !counter ) {
-
-            var now = Date.now();
-
-            ctx.dt = now - ctx.now;
-            ctx.millis += ctx.dt;
-            ctx.now = now;
-
-            if ( ctx.update ) ctx.update( ctx.dt );
-            if ( ctx.autoclear ) ctx.clear();
-            if ( ctx.draw ) ctx.draw( ctx );
-        }
-
-        counter = ++counter % ctx.interval;
-        timeout = requestAnimationFrame( update );
-    }
-
-    function resize( event ) {
-
-        if ( !ctx.autoresize ) return;
-
-        var aspect_ratio, num_pixels, new_height;
-        var target = ctx.type === DOM ? ctx.style : ctx.canvas;
         
-        if ( ctx.fullscreen ) {
-            num_pixels = window.innerWidth * window.innerHeight;
-            if (ctx.max_pixels && num_pixels > ctx.max_pixels){
-                aspect_ratio = window.innerWidth / window.innerHeight;
-                new_height = Math.sqrt(ctx.max_pixels / aspect_ratio);
-                ctx.height = target.height = new_height;
-                ctx.width  = target.width  = new_height * aspect_ratio;
-                target.style.height = window.innerHeight + 'px';
-                target.style.width = window.innerWidth + 'px';
-            } else {
-                ctx.height = target.height = window.innerHeight;
-                ctx.width  = target.width  = window.innerWidth;
+    
+        // Soft object merge
+        function extend( target, source ) {
+    
+            for ( var prop in source ) {
+    
+                if ( !target.hasOwnProperty( prop ) ) {
+                    target[ prop ] = source[ prop ];
+                }
             }
-        } else {
-
-            target.height = ctx.height;
-            target.width = ctx.width;
+    
+            return target;
         }
-
-        if ( ctx.retina &&
-             ctx.type === CANVAS &&
-             window.devicePixelRatio ) {
-
-            var cssPxHeight = target.height;
-            var cssPxWidth = target.width;
-
-            // The 2D Context draws into the real device pixels.
-            ctx.canvas.height = cssPxHeight * window.devicePixelRatio;
-            ctx.canvas.width = cssPxWidth * window.devicePixelRatio;
-            ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
-
-            // The DOM element retains pre-retina size in CSS pixels.
-            ctx.canvas.style.cssText = "height: " + cssPxHeight + "px; width: " + cssPxWidth + "px;";
-
+    
+        // Shallow clones a given object
+        function clone( obj ) {
+    
+            var copy = {};
+    
+            function getCallback( method, context ) {
+    
+                return function() {
+                    method.call( context, arguments );
+                };
+            }
+    
+            for ( var prop in obj ) {
+    
+                if ( typeof obj[ prop ] === 'function' )
+    
+                    copy[ prop ] = getCallback( obj[ prop ], obj );
+    
+                else
+    
+                    copy[ prop ] = obj[ prop ];
+            }
+    
+            return copy;
         }
-
-        if ( ctx.resize ) ctx.resize();
-    }
+    
+        // Replaces array contents, maintaining the original object
+        function displace( array, contents ) {
+    
+            // we could use `a.splice.apply( a, [ 0, a.length ].concat( b ) )`
+            // but contents could be a `touchlist` and we need to flatten it
+    
+            array.length = 0;
+    
+            for ( var i = 0, n = contents.length; i < n; i++ ) {
+                array[i] = contents[i];
+            }
+    
+            return array;
+        }
+    
+        // Sets up sketch mouse & keyboard events
+        function bindEvents() {
+    
+            var keynames = {
+                8:  'BACKSPACE',
+                9:  'TAB',
+                13: 'ENTER',
+                16: 'SHIFT',
+                27: 'ESCAPE',
+                32: 'SPACE',
+                37: 'LEFT',
+                38: 'UP',
+                39: 'RIGHT',
+                40: 'DOWN'
+            };
+    
+            // Explicitly set all keys to false initially
+            for ( var name in keynames ) {
+                api.keys[ keynames[ name ] ] = false;
+            }
+    
+            // maps a key code to a key name
+            function map( code ) {
+                return keynames[ code ] || String.fromCharCode( code );
+            }
+    
+            // Update mouse position
+            function updateMouse( coord ) {
+    
+                ctx.mouse.ox = ctx.mouse.x;
+                ctx.mouse.oy = ctx.mouse.y;
+    
+                ctx.mouse.x = coord.x;
+                ctx.mouse.y = coord.y;
+    
+                ctx.mouse.dx = ctx.mouse.x - ctx.mouse.ox;
+                ctx.mouse.dy = ctx.mouse.y - ctx.mouse.oy;
+            }
+    
+            var old = {};
+    
+            // Augments the native mouse event
+            function augment( event ) {
+    
+                var o, e = clone( event );
+                e.original = event;
+    
+                // Compute container offset
+                for ( var el = ctx.canvas, ox = 0, oy = 0; el; el = el.offsetParent ) {
+    
+                    ox += el.offsetLeft;
+                    oy += el.offsetTop;
+                }
+    
+                // Normalise touches / mouse
+                if ( e.touches && !!e.touches.length ) {
+    
+                    for ( var i = e.touches.length - 1, touch; i >= 0; i-- ) {
+    
+                        touch = e.touches[i];
+                        touch.x = touch.pageX - ox;
+                        touch.y = touch.pageY - oy;
+    
+                        o = old[i] || touch;
+    
+                        touch.dx = touch.x - o.x;
+                        touch.dy = touch.y - o.x;
+    
+                        touch.ox = o.x;
+                        touch.oy = o.y;
+    
+                        old[i] = clone( touch );
+                    }
+    
+                } else {
+    
+                    e.x = e.pageX - ox;
+                    e.y = e.pageY - oy;
+    
+                    o = old[ 'mouse' ] || e;
+    
+                    e.dx = e.x - o.x;
+                    e.dy = e.y - o.y;
+    
+                    e.ox = o.x;
+                    e.oy = o.y;
+    
+                    old[ 'mouse' ] = e;
+                }
+    
+                return e;
+            }
+    
+            // Touch events
+    
+            function touchstart( event ) {
+    
+                // Prevent scrolling (should this be optional?)
+                event.preventDefault();
+    
+                event = augment( event );
+                displace( ctx.touches, event.touches );
+                updateMouse( ctx.touches[0] );
+    
+                if ( ctx.touchstart ) ctx.touchstart( event );
+                if ( ctx.mousedown ) ctx.mousedown( event );
+            }
+    
+            function touchmove( event ) {
+    
+                event = augment( event );
+                displace( ctx.touches, event.touches );
+                updateMouse( ctx.touches[0] );
+    
+                if ( ctx.touchmove ) ctx.touchmove( event );
+                if ( ctx.mousemove ) ctx.mousemove( event );
+            }
+    
+            function touchend( event ) {
+    
+                event = augment( event );
+    
+                // Cleanup ended touches
+                if ( !event.touches.length ) old = {};
+                else for ( var id in old ) if ( !event.touches[ id ] ) delete old[ id ];
+    
+                if ( ctx.touchend ) ctx.touchend( event );
+                if ( ctx.mouseup ) ctx.mouseup( event );
+            }
+    
+            // Mouse events
+    
+            function mouseover( event ) {
+    
+                event = augment( event );
+                if ( ctx.mouseover ) ctx.mouseover( event );
+            }
+    
+            function mousedown( event ) {
+    
+                event = augment( event );
+    
+                if ( !ctx.dragging ) {
+    
+                    unbind( ctx.canvas, 'mousemove', mousemove );
+                    unbind( ctx.canvas, 'mouseup', mouseup );
+    
+                    bind( document, 'mousemove', mousemove );
+                    bind( document, 'mouseup', mouseup );
+    
+                    ctx.dragging = true;
+                }
+    
+                displace( ctx.touches, [ event ] );
+    
+                if ( ctx.touchstart ) ctx.touchstart( event );
+                if ( ctx.mousedown ) ctx.mousedown( event );
+            }
+    
+            function mousemove( event ) {
+    
+                event = augment( event );
+                updateMouse( event );
+    
+                displace( ctx.touches, [ event ] );
+    
+                if ( ctx.touchmove ) ctx.touchmove( event );
+                if ( ctx.mousemove ) ctx.mousemove( event );
+            }
+    
+            function mouseout( event ) {
+    
+                event = augment( event );
+                if ( ctx.mouseout ) ctx.mouseout( event );
+            }
+    
+            function mouseup( event ) {
+    
+                event = augment( event );
+    
+                if ( ctx.dragging ) {
+    
+                    unbind( document, 'mousemove', mousemove );
+                    unbind( document, 'mouseup', mouseup );
+    
+                    bind( ctx.canvas, 'mousemove', mousemove );
+                    bind( ctx.canvas, 'mouseup', mouseup );
+    
+                    ctx.dragging = false;
+                }
+    
+                delete old[ 'mouse' ];
+    
+                if ( ctx.touchend ) ctx.touchend( event );
+                if ( ctx.mouseup ) ctx.mouseup( event );
+            }
+    
+            function click( event ) {
+    
+                event = augment( event );
+                if ( ctx.click ) ctx.click( event );
+            }
+    
+            // Keyboard events
+    
+            function keydown( event ) {
+    
+                ctx.keys[ map( event.keyCode ) ] = true;
+                ctx.keys[ event.keyCode ] = true;
+    
+                if ( ctx.keydown ) ctx.keydown( event );
+            }
+    
+            function keyup( event ) {
+    
+                ctx.keys[ map( event.keyCode ) ] = false;
+                ctx.keys[ event.keyCode ] = false;
+    
+                if ( ctx.keyup ) ctx.keyup( event );
+            }
+    
+            // Bind to context
+    
+            bind( ctx.canvas, 'touchstart', touchstart );
+            bind( ctx.canvas, 'touchmove', touchmove );
+            bind( ctx.canvas, 'touchend', touchend );
+    
+            bind( ctx.canvas, 'mouseover', mouseover );
+            bind( ctx.canvas, 'mousedown', mousedown );
+            bind( ctx.canvas, 'mousemove', mousemove );
+            bind( ctx.canvas, 'mouseout', mouseout );
+            bind( ctx.canvas, 'mouseup', mouseup );
+            bind( ctx.canvas, 'click', click );
+    
+            bind( document, 'keydown', keydown );
+            bind( document, 'keyup', keyup );
+            bind( window, 'resize', resize );
+        }
+    
+        // ----------------------------------------
+        // Event handlers
+        // ----------------------------------------
+    
+        function update() {
+    
+            if ( !counter ) {
+    
+                var now = Date.now();
+    
+                ctx.dt = now - ctx.now;
+                ctx.millis += ctx.dt;
+                ctx.now = now;
+    
+                if ( ctx.update ) ctx.update( ctx.dt );
+                if ( ctx.autoclear ) ctx.clear();
+                if ( ctx.draw ) ctx.draw( ctx );
+            }
+    
+            counter = ++counter % ctx.interval;
+            timeout = requestAnimationFrame( update );
+        }
+    
+        function resize( event ) {
+    
+            if ( !ctx.autoresize ) return;
+    
+            var aspect_ratio, num_pixels, new_height;
+            var target = ctx.type === DOM ? ctx.style : ctx.canvas;
+            
+            if ( ctx.fullscreen ) {
+                num_pixels = window.innerWidth * window.innerHeight;
+                if (ctx.max_pixels && num_pixels > ctx.max_pixels){
+                    aspect_ratio = window.innerWidth / window.innerHeight;
+                    new_height = Math.sqrt(ctx.max_pixels / aspect_ratio);
+                    ctx.height = target.height = new_height;
+                    ctx.width  = target.width  = new_height * aspect_ratio;
+                    target.style.height = window.innerHeight + 'px';
+                    target.style.width = window.innerWidth + 'px';
+                } else {
+                    ctx.height = target.height = window.innerHeight;
+                    ctx.width  = target.width  = window.innerWidth;
+                }
+            } else {
+    
+                target.height = ctx.height;
+                target.width = ctx.width;
+            }
+    
+            if ( ctx.retina &&
+                 ctx.type === CANVAS &&
+                 window.devicePixelRatio ) {
+    
+                var cssPxHeight = target.height;
+                var cssPxWidth = target.width;
+    
+                // The 2D Context draws into the real device pixels.
+                ctx.canvas.height = cssPxHeight * window.devicePixelRatio;
+                ctx.canvas.width = cssPxWidth * window.devicePixelRatio;
+                ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+    
+                // The DOM element retains pre-retina size in CSS pixels.
+                ctx.canvas.style.cssText = "height: " + cssPxHeight + "px; width: " + cssPxWidth + "px;";
+    
+            }
+    
+            if ( ctx.resize ) ctx.resize();
+        }
+        
+        return ctx;
+    } // end create fn
 
     // ----------------------------------------
     // Public API
