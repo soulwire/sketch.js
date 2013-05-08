@@ -1,0 +1,28 @@
+{
+  "name": "sketch",
+  "title": "sketch.js",
+  "description": "Cross-Platform JavaScript Creative Coding Framework",
+  "version": "1.1.0",
+  "homepage": "https://github.com/soulwire/sketch.js",
+  "author": {
+    "name": "Justin Windle (soulwire)",
+    "url": "https://github.com/soulwire/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/soulwire/sketch.js.git"
+  },
+  "bugs": {
+    "url": "https://github.com/soulwire/sketch.js/issues"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://raw.github.com/soulwire/sketch.js/jQuery-event-based-animation/master/LICENSE.txt"
+    }
+  ],
+  "dependencies": {
+    "grunt": "0.3.15"
+  },
+  "keywords": []
+}
