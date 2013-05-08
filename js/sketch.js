@@ -192,7 +192,7 @@ var Sketch = (function() {
         var ctx;
         var counter = 0;
         var timeout = -1;
-        
+
         // Properties & methods mixed into ctx
         var api = {
 
@@ -246,11 +246,19 @@ var Sketch = (function() {
             // TODO: Empty children here for non-canvas sketches?
             clear: function() {
 
-                if ( ctx.canvas ) {
+                if ( ctx.type === CANVAS || ctx.type === WEB_GL ) {
                     ctx.canvas.width = ctx.canvas.width;
 
                     if ( ctx.retina && window.devicePixelRatio ) {
                       ctx.scale( window.devicePixelRatio, window.devicePixelRatio );
+                    }
+
+                } else if ( ctx.type === DOM ) {
+
+                    var children = ctx.canvas.childNodes;
+
+                    for ( var i = 0, n = children.length; i < n; i++ ) {
+                        children[i].remove();
                     }
                 }
             },
@@ -318,6 +326,7 @@ var Sketch = (function() {
 
             default:
 
+                options.type = DOM;
                 canvas = ctx = document.createElement( 'div' );
 
         }
@@ -481,7 +490,7 @@ var Sketch = (function() {
                         o = old[i] || touch;
     
                         touch.dx = touch.x - o.x;
-                        touch.dy = touch.y - o.x;
+                        touch.dy = touch.y - o.y;
     
                         touch.ox = o.x;
                         touch.oy = o.y;
