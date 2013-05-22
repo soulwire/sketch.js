@@ -31,6 +31,7 @@ Here's an example:
  * The `mouse` property is also the first element of the `touches` array and vice versa, so you can code to one standard and get touch and multi-touch support for free.
  * The `update` and `draw` loops run on the browser animation frame and can `stop` and `start` whenever you like.
  * You get fast access to `Math` functions and constants, plus extras like range and array enabled `random` plus `map` and `lerp`.
+ * Simple and configurable. You can even bring your own `context`, so it works well with libraries like [THREE](http://threejs.org/).
 
 #### The Rest
 
