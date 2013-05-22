@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+<head>
+    <title>Sketch.js Test Suite</title>
+    <link rel="shortcut icon" type="image/png" href="jasmine/jasmine_favicon.png">
+    <link rel="stylesheet" type="text/css" href="jasmine/jasmine.css">
+</head>
+<body>
+    <!-- Jasmine -->
+    <script src="jasmine/jasmine.js"></script>
+    <script src="jasmine/jasmine-html.js"></script>
+    <!-- Sketch -->
+    <script src="../js/sketch.js"></script>
+    <!-- Specs -->
+    <script src="spec/sketch.js"></script>
+    <script>
+        
+        (function() {
+
+            var jasmineEnv = jasmine.getEnv();
+            jasmineEnv.updateInterval = 1000;
+
+            var htmlReporter = new jasmine.HtmlReporter();
+
+            jasmineEnv.addReporter( htmlReporter );
+
+            jasmineEnv.specFilter = function( spec ) {
+                return htmlReporter.specFilter( spec );
+            };
+
+            var currentWindowOnload = window.onload;
+
+            window.onload = function() {
+
+                if (currentWindowOnload) {
+                    currentWindowOnload();
+                }
+
+                execJasmine();
+            };
+
+            function execJasmine() {
+                jasmineEnv.execute();
+            }
+
+        })();
+
+    </script>
+</body>
+</html>
