@@ -1,0 +1,73 @@
+<!doctype html>
+<html>
+    <head>
+        <title>sketch.js &raquo; THREE.js Example</title>
+        <link rel="stylesheet" href="css/example.css">
+        <style type="text/css">
+            html, body {
+                background: #2b2b2b;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="container"></div>
+        <header class="info">
+            <hgroup class="about">
+                <h1>sketch.js &rsaquo; THREE</h1>
+                <h2>Using a THREE.js renderer context with sketch.js</h2>
+            </hgroup>
+            <nav class="more">
+                <a href="https://github.com/soulwire/sketch.js/archive/master.zip" target="_blank">Download</a>
+                <a href="https://github.com/soulwire/sketch.js" target="_blank">View on Github</a>
+            </nav>
+        </header>
+        <script src="https://raw.github.com/mrdoob/three.js/r58/build/three.min.js"></script>
+        <script src="../js/sketch.js"></script>
+        <script>
+
+        var camera, scene, geometry, material, mesh, renderer = new THREE.WebGLRenderer();
+
+        var demo = Sketch.create({
+
+            type: Sketch.WEBGL,
+
+            // Use existing element
+            element: renderer.domElement,
+
+            // Use existing context
+            context: renderer.context,
+
+            setup: function() {
+
+                camera = new THREE.PerspectiveCamera( 75, this.width / this.height, 1, 10000 );
+                camera.position.z = 1000;
+
+                scene = new THREE.Scene();
+
+                geometry = new THREE.CubeGeometry( 200, 200, 200 );
+                material = new THREE.MeshBasicMaterial( { color: 0xFFFFFF, wireframe: true } );
+
+                mesh = new THREE.Mesh( geometry, material );
+                scene.add( mesh );
+            },
+
+            resize: function() {
+
+                camera.aspect = this.width / this.height;
+                camera.updateProjectionMatrix();
+
+                renderer.setSize( this.width, this.height );
+            },
+
+            draw: function() {
+
+                mesh.rotation.x += 0.01;
+                mesh.rotation.y += 0.02;
+
+                renderer.render( scene, camera );
+            }
+        });
+        
+        </script>
+    </body>
+</html>
