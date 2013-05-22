@@ -25,6 +25,8 @@ Here's an example:
         }
     });
 
+[See it in action](http://jsfiddle.net/soulwire/7wtbm/)
+
 #### The Highlights
 
  * A sketch is an augmented drawing context (`CanvasRenderingContext2D`, `WebGLRenderingContext` or `HTMLElement`) so it has all the expected drawing methods built in.
