@@ -53,6 +53,7 @@ var Sketch = (function() {
         container: doc.body,
         interval: 1,
         globals: true,
+        retina: false,
         type: CANVAS
     };
 
@@ -155,6 +156,7 @@ var Sketch = (function() {
         var counter = 0;
         var touches = [];
         var setup = false;
+        var ratio = win.devicePixelRatio;
         var isDiv = context.type == DOM;
         var is2D = context.type == CANVAS;
 
@@ -253,6 +255,17 @@ var Sketch = (function() {
 
             target.height = context.height + suffix;
             target.width = context.width + suffix;
+
+            if ( context.retina && is2D && ratio ) {
+
+                target.height = context.height * ratio;
+                target.width = context.width * ratio;
+
+                target.style.height = context.height + 'px';
+                target.style.width = context.width + 'px';
+
+                context.scale( ratio, ratio );
+            }
 
             if ( setup ) trigger( context.resize );
         }

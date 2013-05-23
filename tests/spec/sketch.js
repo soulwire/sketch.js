@@ -229,7 +229,9 @@ describe( 'setup and teardown', function() {
             updated = true;
         };
 
-        waits( 100 );
+        waitsFor(function() {
+            return setup;
+        }, 'Setup never fired', 10000 );
 
         runs( function() {
             expect( setup ).toBe( true );
@@ -254,7 +256,9 @@ describe( 'setup and teardown', function() {
         expect( setups ).toBe( 1 );
         expect( updates ).toBe( 1 );
 
-        waits( 100 );
+        waitsFor(function() {
+            return updates > 1;
+        }, 'Update failed', 10000 );
 
         runs( function() {
             expect( updates ).toBeGreaterThan( 1 );
@@ -274,12 +278,18 @@ describe( 'setup and teardown', function() {
             update: function() { updated = true; }
         });
 
-        waits( 100 ), runs( function() {
+        runs( function() {
             expect( setup ).toBe( true );
             expect( updated ).toBe( false );
         });
 
-        runs( sketch.start ), waits( 100 ), runs( function() {
+        runs( sketch.start );
+
+        waitsFor(function() {
+            return updated;
+        }, 'Update failed', 10000 );
+
+        runs( function() {
             expect( updated ).toBe( true );
         });
     });
@@ -292,24 +302,40 @@ describe( 'setup and teardown', function() {
 
         sketch = Sketch.create({
             update: function() { updates++; }
-        });
+        });        
 
-        runs( sketch.stop ), waits( 100 ), runs( function() {
+        waitsFor( function() { return updates > 0; }, 'Update failed', 10000 );
+
+        runs( sketch.stop );
+
+        runs( function() {
             expect( updates ).toBe( 1 );
         });
 
-        runs( sketch.start ), waits( 100 ), runs( function() {
+        runs( sketch.start );
+
+        waitsFor( function() { return updates > 1; }, 'Update failed', 10000 );
+
+        runs( function() {
             expect( updates ).toBeGreaterThan( 1 );
         });
 
         runs( function() {
             count = updates;
             sketch.toggle();
-        }), waits( 100 ), runs( function() {
+        });
+
+        waits( 1000 );
+
+        runs( function() {
             expect( updates ).toBe( count );
         });
 
-        runs( sketch.toggle ), waits( 100 ), runs( function() {
+        runs( sketch.toggle );
+
+        waitsFor( function() { return updates > count; }, 'Update failed', 10000 );
+
+        runs( function() {
             expect( updates ).toBeGreaterThan( count );
         });
     });
