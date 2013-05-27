@@ -1,45 +1,81 @@
 
-function simulate(element, eventName) {
+function simulate( element, eventName ) {
 
-    var options = extend(defaultOptions, arguments[2] || {});
+    var options = extend( defaultOptions, arguments[2] || {} );
+    var bounds = element.getBoundingClientRect();
     var oEvent, eventType = null;
 
-    for (var name in eventMatchers) {
-        if (eventMatchers[name].test(eventName)) { eventType = name; break; }
-    }
+    for ( var name in eventMatchers )
 
-    if (!eventType)
-        throw new SyntaxError('Only HTMLEvents and MouseEvents interfaces are supported');
+        if ( eventMatchers[ name ].test( eventName ) ) { eventType = name; break; }
 
-    if (document.createEvent) {
-        oEvent = document.createEvent(eventType);
-        if (eventType == 'HTMLEvents') {
-            oEvent.initEvent(eventName, options.bubbles, options.cancelable);
-        } else {
-            oEvent.initMouseEvent(eventName, options.bubbles, options.cancelable, document.defaultView,
+    if ( !eventType )
+
+        throw new SyntaxError( 'Only HTMLEvents, MouseEvents and TouchEvents interfaces are supported' );
+
+    if ( document.createEvent ) {
+
+        oEvent = document.createEvent( eventType );
+
+        if ( eventType == 'HTMLEvents' ) {
+
+            oEvent.initEvent( eventName, options.bubbles, options.cancelable );
+
+        } else if ( eventType == 'MouseEvents' ) {
+
+            oEvent.initMouseEvent( eventName, options.bubbles, options.cancelable, document.defaultView,
             options.button, options.pointerX, options.pointerY, options.pointerX, options.pointerY,
-            options.ctrlKey, options.altKey, options.shiftKey, options.metaKey, options.button, element);
+            options.ctrlKey, options.altKey, options.shiftKey, options.metaKey, options.button, element );
+
+        } else {
+
+            var touch, touches = [];
+
+            for ( var i = 0; i < options.touches.length; i++ ) {
+
+                touch = options.touches[i];
+
+                touches.push( document.createTouch( window, element, 1000 + i,
+                    touch.x + window.scrollX, touch.y + window.scrollY, // page
+                    touch.x, touch.y, // screen
+                    touch.x, touch.y, // client
+                    0, 0, 0 ) );
+            }
+
+            var touchList = document.createTouchList.apply( document, touches );
+
+            oEvent.initTouchEvent( eventName, options.bubbles, options.cancelable, document.defaultView,
+            options.button, options.pointerX, options.pointerY, options.pointerX, options.pointerY,
+            options.ctrlKey, options.altKey, options.shiftKey, options.metaKey, touchList, touchList );
         }
-        element.dispatchEvent(oEvent);
+
+        element.dispatchEvent( oEvent );
+
     } else {
+
         options.clientX = options.pointerX;
         options.clientY = options.pointerY;
         var evt = document.createEventObject();
         oEvent = extend(evt, options);
         element.fireEvent('on' + eventName, oEvent);
     }
+
     return element;
 }
 
-function extend(destination, source) {
-    for (var property in source)
-      destination[property] = source[property];
+function extend( destination, source ) {
+
+    for ( var property in source )
+
+        destination[ property ] = source[ property ];
+
     return destination;
 }
 
 var eventMatchers = {
     'HTMLEvents': /^(?:load|unload|abort|error|select|change|submit|reset|focus|blur|resize|scroll)$/,
-    'MouseEvents': /^(?:click|dblclick|mouse(?:down|up|over|move|out))$/
+    'MouseEvents': /^(?:click|dblclick|mouse(?:down|up|over|move|out))$/,
+    'TouchEvent': /^(?:touch(?:start|end|move))$/
 };
 
 var defaultOptions = {
@@ -51,8 +87,31 @@ var defaultOptions = {
     shiftKey: false,
     metaKey: false,
     bubbles: true,
-    cancelable: true
+    cancelable: true,
+    touches: []
 };
+
+var canSimulateMouse = false;
+var canSimulateTouch = false;
+
+// Check whether simulated mouse/touch events will work
+// TODO: Simulated touch events don't seem to work on a Chromebook Pixel - test using examples for now
+(function() {
+
+    var el = document.createElement( 'div' );
+    document.body.appendChild( el );
+
+    el.addEventListener( 'mousedown', function() { canSimulateMouse = true; });
+    el.addEventListener( 'touchstart', function() { canSimulateTouch = true; });
+
+    try {
+        simulate( el, 'mousedown', { pointerX: 0, pointerY: 0 } );
+        simulate( el, 'touchstart', { touches: [{ x: 0, y: 0 }] } );
+    } catch( error ) {}
+
+    document.body.removeChild( el );
+
+})();
 
 describe( 'create', function() {
 
@@ -552,156 +611,290 @@ describe( 'events', function() {
 
     // mousedown
 
-    it( 'mousedown', function() {
+    if ( canSimulateMouse ) {
 
-        var mousedown = false;
-        var x = ~~( Math.random() * 100 );
-        var y = ~~( Math.random() * 100 );
+        it( 'mousedown', function() {
 
-        sketch = Sketch.create({
-            mousedown: function() {
-                mousedown = true;
-            }
+            var mousedown = false;
+            var touchstart = false;
+            var x = ~~( Math.random() * 100 );
+            var y = ~~( Math.random() * 100 );
+
+            sketch = Sketch.create({
+                touchstart: function() { touchstart = true; },
+                mousedown: function() { mousedown = true; }
+            });
+
+            var bounds = sketch.canvas.getBoundingClientRect();
+
+            simulate( sketch.canvas, 'mousedown', {
+                pointerX: x + bounds.left,
+                pointerY: y + bounds.top
+            });
+
+            expect( mousedown ).toBe( true );
+            expect( touchstart ).toBe( true );
+            expect( sketch.touches[0].x ).toBe( x );
+            expect( sketch.touches[0].y ).toBe( y );
+            expect( sketch.mouse.x ).toBe( x );
+            expect( sketch.mouse.y ).toBe( y );
         });
 
-        var bounds = sketch.canvas.getBoundingClientRect();
+        // mouseup
 
-        simulate( sketch.canvas, 'mousedown', {
-            pointerX: x + bounds.left,
-            pointerY: y + bounds.top
+        it( 'mouseup', function() {
+
+            var mouseup = false;
+            var touchend = false;
+            var x = ~~( Math.random() * 100 );
+            var y = ~~( Math.random() * 100 );
+
+            sketch = Sketch.create({
+                touchend: function() { touchend = true; },
+                mouseup: function() { mouseup = true; }
+            });
+
+            var bounds = sketch.canvas.getBoundingClientRect();
+
+            simulate( sketch.canvas, 'mouseup', {
+                pointerX: x + bounds.left,
+                pointerY: y + bounds.top
+            });
+
+            expect( mouseup ).toBe( true );
+            expect( touchend ).toBe( true );
+            expect( sketch.touches[0].x ).toBe( x );
+            expect( sketch.touches[0].y ).toBe( y );
+            expect( sketch.mouse.x ).toBe( x );
+            expect( sketch.mouse.y ).toBe( y );
         });
 
-        expect( sketch.touches[0].x ).toBe( x );
-        expect( sketch.touches[0].y ).toBe( y );
-        expect( sketch.mouse.x ).toBe( x );
-        expect( sketch.mouse.y ).toBe( y );
-        expect( mousedown ).toBe( true );
-    });
+        // click
 
-    // mouseup
+        it( 'click', function() {
 
-    it( 'mouseup', function() {
+            var click = false;
+            var x = ~~( Math.random() * 100 );
+            var y = ~~( Math.random() * 100 );
 
-        var mouseup = false;
-        var x = ~~( Math.random() * 100 );
-        var y = ~~( Math.random() * 100 );
+            sketch = Sketch.create({
+                click: function() { click = true; }
+            });
 
-        sketch = Sketch.create({
-            mouseup: function() {
-                mouseup = true;
-            }
+            var bounds = sketch.canvas.getBoundingClientRect();
+
+            simulate( sketch.canvas, 'click', {
+                pointerX: x + bounds.left,
+                pointerY: y + bounds.top
+            });
+
+            expect( click ).toBe( true );
+            expect( sketch.touches[0].x ).toBe( x );
+            expect( sketch.touches[0].y ).toBe( y );
+            expect( sketch.mouse.x ).toBe( x );
+            expect( sketch.mouse.y ).toBe( y );
         });
 
-        var bounds = sketch.canvas.getBoundingClientRect();
+        // mousemove
 
-        simulate( sketch.canvas, 'mouseup', {
-            pointerX: x + bounds.left,
-            pointerY: y + bounds.top
+        it( 'mousemove', function() {
+
+            var x1 = ~~( Math.random() * 150 );
+            var y1 = ~~( Math.random() * 150 );
+            var x2 = ~~( Math.random() * 150 );
+            var y2 = ~~( Math.random() * 150 );
+            var mouseevents = 0;
+            var touchevents = 0;
+
+            sketch = Sketch.create({
+                touchmove: function( event ) { touchevents++; },
+                mousemove: function( event ) { mouseevents++; }
+            });
+
+            var bounds = sketch.canvas.getBoundingClientRect();
+
+            simulate( sketch.canvas, 'mousemove', {
+                pointerX: x1 + bounds.left,
+                pointerY: y1 + bounds.top
+            });
+
+            expect( touchevents ).toBe( 1 );
+            expect( mouseevents ).toBe( 1 );
+            expect( sketch.mouse.x ).toBe( x1 );
+            expect( sketch.mouse.y ).toBe( y1 );
+            expect( sketch.touches.length ).toBe( 1 );
+            expect( sketch.touches[0].x ).toBe( x1 );
+            expect( sketch.touches[0].y ).toBe( y1 );
+
+            simulate( sketch.canvas, 'mousemove', {
+                pointerX: x2 + bounds.left,
+                pointerY: y2 + bounds.top
+            });
+
+            expect( touchevents ).toBe( 2 );
+            expect( mouseevents ).toBe( 2 );
+            expect( sketch.mouse.x ).toBe( x2 );
+            expect( sketch.mouse.y ).toBe( y2 );
+            expect( sketch.mouse.ox ).toBe( x1 );
+            expect( sketch.mouse.oy ).toBe( y1 );
+            expect( sketch.mouse.dx ).toBe( x2 - x1 );
+            expect( sketch.mouse.dy ).toBe( y2 - y1 );
+            expect( sketch.touches.length ).toBe( 1 );
+            expect( sketch.touches[0].x ).toBe( x2 );
+            expect( sketch.touches[0].y ).toBe( y2 );
+            expect( sketch.touches[0].ox ).toBe( x1 );
+            expect( sketch.touches[0].oy ).toBe( y1 );
+            expect( sketch.touches[0].dx ).toBe( x2 - x1 );
+            expect( sketch.touches[0].dy ).toBe( y2 - y1 );
         });
 
-        expect( sketch.touches[0].x ).toBe( x );
-        expect( sketch.touches[0].y ).toBe( y );
-        expect( sketch.mouse.x ).toBe( x );
-        expect( sketch.mouse.y ).toBe( y );
-        expect( mouseup ).toBe( true );
-    });
+        // dragging
 
-    // click
+        it( 'dragging', function() {
 
-    it( 'click', function() {
+            sketch = Sketch.create();
 
-        var click = false;
-        var x = ~~( Math.random() * 100 );
-        var y = ~~( Math.random() * 100 );
+            expect( sketch.dragging ).toBe( false );
 
-        sketch = Sketch.create({
-            click: function() {
-                click = true;
-            }
+            simulate( sketch.canvas, 'mousedown' );
+            simulate( sketch.canvas, 'mousemove' );
+
+            expect( sketch.dragging ).toBe( true );
+
+            simulate( sketch.canvas, 'mouseup' );
+
+            expect( sketch.dragging ).toBe( false );
+        });
+    } else {
+        console.warn( 'Cannot simulate mouse events - use examples to validate functinality' );
+    }
+
+    if ( canSimulateTouch && 'ontouchstart' in document.documentElement ) {
+
+        it( 'touchstart', function() {
+
+            var mousedown = false;
+            var touchstart = false;
+            var x = ~~( Math.random() * 100 );
+            var y = ~~( Math.random() * 100 );
+
+            sketch = Sketch.create({
+                mousedown: function() { mousedown = true; },
+                touchstart: function() { touchstart = true; }
+            });
+
+            var bounds = sketch.canvas.getBoundingClientRect();
+
+            simulate( sketch.canvas, 'touchstart', {
+                touches: [{
+                    x: x + bounds.left,
+                    y: y + bounds.top
+                },{
+                    x: x + bounds.left + 100,
+                    y: y + bounds.top + 100
+                }]
+            });
+
+            expect( mousedown ).toBe( true );
+            expect( touchstart ).toBe( true );
+            expect( sketch.touches[0].x ).toBe( x );
+            expect( sketch.touches[0].y ).toBe( y );
+            expect( sketch.touches[1].x ).toBe( x + 100 );
+            expect( sketch.touches[1].y ).toBe( y + 100 );
+            expect( sketch.mouse.x ).toBe( x );
+            expect( sketch.mouse.y ).toBe( y );
         });
 
-        var bounds = sketch.canvas.getBoundingClientRect();
+        it( 'touchmove', function() {
 
-        simulate( sketch.canvas, 'click', {
-            pointerX: x + bounds.left,
-            pointerY: y + bounds.top
+            var x1 = ~~( Math.random() * 150 );
+            var y1 = ~~( Math.random() * 150 );
+            var x2 = ~~( Math.random() * 150 );
+            var y2 = ~~( Math.random() * 150 );
+            var mouseevents = 0;
+            var touchevents = 0;
+
+            sketch = Sketch.create({
+                touchmove: function( event ) { touchevents++; },
+                mousemove: function( event ) { mouseevents++; }
+            });
+
+            var bounds = sketch.canvas.getBoundingClientRect();
+
+            simulate( sketch.canvas, 'touchmove', {
+                touches: [{
+                    x: x1 + bounds.left,
+                    y: y1 + bounds.top
+                }]
+            });
+
+            expect( touchevents ).toBe( 1 );
+            expect( mouseevents ).toBe( 1 );
+            expect( sketch.mouse.x ).toBe( x1 );
+            expect( sketch.mouse.y ).toBe( y1 );
+            expect( sketch.touches.length ).toBe( 1 );
+            expect( sketch.touches[0].x ).toBe( x1 );
+            expect( sketch.touches[0].y ).toBe( y1 );
+
+            simulate( sketch.canvas, 'touchmove', {
+                touches: [{
+                    x: x2 + bounds.left,
+                    y: y2 + bounds.top
+                }]
+            });
+
+            expect( touchevents ).toBe( 2 );
+            expect( mouseevents ).toBe( 2 );
+            expect( sketch.mouse.x ).toBe( x2 );
+            expect( sketch.mouse.y ).toBe( y2 );
+            expect( sketch.mouse.ox ).toBe( x1 );
+            expect( sketch.mouse.oy ).toBe( y1 );
+            expect( sketch.mouse.dx ).toBe( x2 - x1 );
+            expect( sketch.mouse.dy ).toBe( y2 - y1 );
+            expect( sketch.touches.length ).toBe( 1 );
+            expect( sketch.touches[0].x ).toBe( x2 );
+            expect( sketch.touches[0].y ).toBe( y2 );
+            expect( sketch.touches[0].ox ).toBe( x1 );
+            expect( sketch.touches[0].oy ).toBe( y1 );
+            expect( sketch.touches[0].dx ).toBe( x2 - x1 );
+            expect( sketch.touches[0].dy ).toBe( y2 - y1 );
         });
 
-        expect( sketch.touches[0].x ).toBe( x );
-        expect( sketch.touches[0].y ).toBe( y );
-        expect( sketch.mouse.x ).toBe( x );
-        expect( sketch.mouse.y ).toBe( y );
-        expect( click ).toBe( true );
-    });
+        it( 'touchend', function() {
 
-    // mousemove
+            var mouseup = false;
+            var touchend = false;
+            var x = ~~( Math.random() * 100 );
+            var y = ~~( Math.random() * 100 );
 
-    it( 'mousemove', function() {
+            sketch = Sketch.create({
+                mouseup: function() { mouseup = true; },
+                touchend: function() { touchend = true; }
+            });
 
-        var x1 = ~~( Math.random() * 150 );
-        var y1 = ~~( Math.random() * 150 );
-        var x2 = ~~( Math.random() * 150 );
-        var y2 = ~~( Math.random() * 150 );
-        var events = 0;
+            var bounds = sketch.canvas.getBoundingClientRect();
 
-        sketch = Sketch.create({
-            mousemove: function( event ) {
-                events++;
-            }
+            simulate( sketch.canvas, 'touchend', {
+                touches: [{
+                    x: x + bounds.left,
+                    y: y + bounds.top
+                },{
+                    x: x + bounds.left + 100,
+                    y: y + bounds.top + 100
+                }]
+            });
+
+            expect( mouseup ).toBe( true );
+            expect( touchend ).toBe( true );
+            expect( sketch.touches[0].x ).toBe( x );
+            expect( sketch.touches[0].y ).toBe( y );
+            expect( sketch.touches[1].x ).toBe( x + 100 );
+            expect( sketch.touches[1].y ).toBe( y + 100 );
+            expect( sketch.mouse.x ).toBe( x );
+            expect( sketch.mouse.y ).toBe( y );
         });
-
-        var bounds = sketch.canvas.getBoundingClientRect();
-
-        simulate( sketch.canvas, 'mousemove', {
-            pointerX: x1 + bounds.left,
-            pointerY: y1 + bounds.top
-        });
-
-        expect( sketch.mouse.x ).toBe( x1 );
-        expect( sketch.mouse.y ).toBe( y1 );
-        expect( sketch.touches.length ).toBe( 1 );
-        expect( sketch.touches[0].x ).toBe( x1 );
-        expect( sketch.touches[0].y ).toBe( y1 );
-        expect( events ).toBe( 1 );
-
-        simulate( sketch.canvas, 'mousemove', {
-            pointerX: x2 + bounds.left,
-            pointerY: y2 + bounds.top
-        });
-
-        expect( sketch.mouse.x ).toBe( x2 );
-        expect( sketch.mouse.y ).toBe( y2 );
-        expect( sketch.mouse.ox ).toBe( x1 );
-        expect( sketch.mouse.oy ).toBe( y1 );
-        expect( sketch.mouse.dx ).toBe( x2 - x1 );
-        expect( sketch.mouse.dy ).toBe( y2 - y1 );
-        expect( sketch.touches.length ).toBe( 1 );
-        expect( sketch.touches[0].x ).toBe( x2 );
-        expect( sketch.touches[0].y ).toBe( y2 );
-        expect( sketch.touches[0].ox ).toBe( x1 );
-        expect( sketch.touches[0].oy ).toBe( y1 );
-        expect( sketch.touches[0].dx ).toBe( x2 - x1 );
-        expect( sketch.touches[0].dy ).toBe( y2 - y1 );
-        expect( events ).toBe( 2 );
-
-    });
-
-    // dragging
-
-    it( 'dragging', function() {
-
-        sketch = Sketch.create();
-
-        expect( sketch.dragging ).toBe( false );
-
-        simulate( sketch.canvas, 'mousedown' );
-        simulate( sketch.canvas, 'mousemove' );
-
-        expect( sketch.dragging ).toBe( true );
-
-        simulate( sketch.canvas, 'mouseup' );
-
-        expect( sketch.dragging ).toBe( false );
-    });
+    } else {
+        console.warn( 'Cannot simulate touch events - use examples to validate functinality' );
+    }
 
 });

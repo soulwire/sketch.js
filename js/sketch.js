@@ -153,7 +153,7 @@ var Sketch = (function() {
 
     function constructor( context ) {
 
-        var request, handler, target, parent, bounds, index, suffix, clock, node, type, key, val, min, max;
+        var request, handler, target, parent, bounds, index, suffix, clock, node, copy, type, key, val, min, max;
 
         var counter = 0;
         var touches = [];
@@ -304,25 +304,26 @@ var Sketch = (function() {
 
             event.preventDefault();
 
-            event = clone( event );
+            copy = clone( event );
+            copy.originalEvent = event;
 
-            if ( event.touches ) {
+            if ( copy.touches ) {
 
-                touches.length = event.touches.length;
+                touches.length = copy.touches.length;
 
-                for ( index = 0; index < event.touches.length; index++ )
+                for ( index = 0; index < copy.touches.length; index++ )
 
-                    touches[ index ] = augment( event.touches[ index ], touches[ index ] );
+                    touches[ index ] = augment( copy.touches[ index ], touches[ index ] );
 
             } else {
 
                 touches.length = 0;
-                touches[0] = augment( event, mouse );
+                touches[0] = augment( copy, mouse );
             }
 
-            mouse = touches[0];
+            extend( mouse, touches[0], true );
 
-            return event;
+            return copy;
         }
 
         function pointer( event ) {
