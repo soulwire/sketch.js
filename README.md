@@ -1,8 +1,17 @@
-### sketch.js
+## sketch.js
 
-[sketch.js](http://soulwire.github.io/sketch.js/) is a very tiny (~2kb gzipped) platform for JavaScript creative coding.
+A tiny (~2kb gzipped) platform for JavaScript creative coding.
 
-#### Code Faster
+<p align="center">
+<a href="http://soulwire.github.io/sketch.js/examples/drawing.html"><img width="24.5%" src="http://soulwire.github.io/sketch.js/examples/img/drawing.jpg"></a>
+<a href="http://soulwire.github.io/sketch.js/examples/particles.html"><img width="24.5%" src="http://soulwire.github.io/sketch.js/examples/img/particles.jpg"></a>
+<a href="http://soulwire.github.com/Plasmatic-Isosurface/"><img width="24.5%" src="http://soulwire.github.io/sketch.js/examples/img/plasma.jpg"></a>
+<a href="http://soulwire.github.com/Muscular-Hydrostats/"><img width="24.5%" src="http://soulwire.github.io/sketch.js/examples/img/tentacles.jpg"></a>
+</p>
+
+A few examples from the [showcase](http://soulwire.github.com/sketch.js/)
+
+### Start Coding Faster
 
 sketch.js lets you get straight to the fun parts of creative coding, without ever having to worry about shims or boilerplate code.
 
@@ -27,7 +36,7 @@ Here's an example:
 
 [See it in action](http://jsfiddle.net/soulwire/7wtbm/)
 
-#### The Highlights
+### The Highlights
 
  * A sketch is an augmented drawing context (`CanvasRenderingContext2D`, `WebGLRenderingContext` or `HTMLElement`) so it has all the expected drawing methods built in.
  * The `mouse` property is also the first element of the `touches` array and vice versa, so you can code to one standard and get touch and multi-touch support for free.
@@ -35,6 +44,6 @@ Here's an example:
  * You get fast access to `Math` functions and constants, plus extras like range and array enabled `random` plus `map` and `lerp`.
  * Simple and configurable. You can even bring your own `context`, so it works well with libraries like [THREE](http://threejs.org/).
 
-#### The Rest
+### The Rest
 
 For more information, check out the [getting started guide](https://github.com/soulwire/sketch.js/wiki/Getting-Started), the [API](https://github.com/soulwire/sketch.js/wiki/API), the many examples in the [showcase](http://soulwire.github.com/sketch.js/) and the full [source](https://github.com/soulwire/sketch.js/blob/master/js/sketch.js).
