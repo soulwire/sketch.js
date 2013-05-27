@@ -59,8 +59,9 @@ describe( 'create', function() {
     var sketch;
 
     afterEach(function() {
-        if ( sketch ) sketch.destroy();
-        sketch = null;
+        while( Sketch.instances.length ) {
+            Sketch.instances[0].destroy();
+        }
     });
 
     // create
@@ -166,8 +167,9 @@ describe( 'setup and teardown', function() {
     var sketch;
 
     afterEach(function() {
-        if ( sketch ) sketch.destroy();
-        sketch = null;
+        while( Sketch.instances.length ) {
+            Sketch.instances[0].destroy();
+        }
     });
 
     // setup appends element to container
@@ -197,16 +199,14 @@ describe( 'setup and teardown', function() {
                 setup = true;
             },
             update: function() {
-                expect( setup ).toBe( true );
                 updated = true;
             }
         });
 
-        expect( setup ).toBe( true );
+        waitsFor( function() { return setup && updated; }, 'Setup and update never fired', 1000 );
 
-        waits( 100 );
-
-        runs( function() {
+        runs(function() {
+            expect( setup ).toBe( true );
             expect( updated ).toBe( true );
         });
     });
@@ -225,15 +225,12 @@ describe( 'setup and teardown', function() {
         };
 
         sketch.update = function() {
-            expect( setup ).toBe( true );
             updated = true;
         };
 
-        waitsFor(function() {
-            return setup;
-        }, 'Setup never fired', 10000 );
+        waitsFor( function() { return setup && updated; }, 'Setup and update never fired', 1000 );
 
-        runs( function() {
+        runs(function() {
             expect( setup ).toBe( true );
             expect( updated ).toBe( true );
         });
@@ -256,9 +253,7 @@ describe( 'setup and teardown', function() {
         expect( setups ).toBe( 1 );
         expect( updates ).toBe( 1 );
 
-        waitsFor(function() {
-            return updates > 1;
-        }, 'Update failed', 10000 );
+        waitsFor( function() { return updates > 1; }, 'Update failed', 10000 );
 
         runs( function() {
             expect( updates ).toBeGreaterThan( 1 );
@@ -285,9 +280,7 @@ describe( 'setup and teardown', function() {
 
         runs( sketch.start );
 
-        waitsFor(function() {
-            return updated;
-        }, 'Update failed', 10000 );
+        waitsFor( function() { return updated; }, 'Update failed', 10000 );
 
         runs( function() {
             expect( updated ).toBe( true );
@@ -302,7 +295,7 @@ describe( 'setup and teardown', function() {
 
         sketch = Sketch.create({
             update: function() { updates++; }
-        });        
+        });
 
         waitsFor( function() { return updates > 0; }, 'Update failed', 10000 );
 
@@ -370,127 +363,118 @@ describe( 'setup and teardown', function() {
 
     it( 'delta times ok after stop/start', function() {
 
-        var max = 0;
-        var MOE = 10;
+        var updates = 0;
 
         sketch = Sketch.create({
             update: function() {
-                max = Math.max( max, this.dt );
+                updates++;
             }
         });
 
-        waits( 100 );
+        waitsFor( function() { return updates > 1; }, 'Update never fired', 1000 );
         runs( sketch.stop );
-        waits( 1000 );
+        waits( 500 );
         runs( sketch.start );
-        waits( 100 );
-        runs(function() {
-            expect( max ).toBeLessThan( (1000/60) + MOE );
-        });
+        waitsFor( function() { return updates > 2; }, 'Update never fired after restart', 1000 );
+        expect( sketch.dt ).toBeLessThan( 100 );
     });
 
     // interval is working
 
     it( 'interval is working', function() {
 
-        var FPS60 = 1000/60;
-        var FPS30 = 1000/30;
-        var MOE = 5;
+        var average1 = 0;
+        var average2 = 0;
 
-        var average = NaN;
-        var frames = -1;
-        var total = 0;
+        var frames1 = 0;
+        var frames2 = 0;
 
-        // 60 FPS
+        Sketch.create({
+            interval: 1,
+            update: function() {
+                average1 += this.dt;
+                frames1++;
+            }
+        });
 
-        runs( function() {
-
-            sketch = Sketch.create({
-                interval: 1,
-                update: function() {
-                    if ( frames++ > 0 ) total += this.dt;
-                }
-            });
+        Sketch.create({
+            interval: 2,
+            update: function() {
+                average2 += this.dt;
+                frames2++;
+            }
         });
 
         waits( 500 );
 
-        runs( function() {
-
-            average = total / frames;
-            frames = -1;
-            total = 0;
-
-            expect( Math.abs( ~~FPS60 - ~~average ) ).toBeLessThan( MOE );
-        });
-
-        // 30 FPS
-
-        runs( function() {
-
-            sketch.destroy();
-
-            sketch = Sketch.create({
-                interval: 2,
-                update: function() {
-                    if ( frames++ > 0 ) total += this.dt;
-                }
-            });
-        });
-
-        waits( 500 );
-
-        runs( function() {
-
-            average = total / frames;
-
-            expect( Math.abs( ~~FPS30 - ~~average ) ).toBeLessThan( MOE );
+        runs(function() {
+            average1 /= frames1;
+            average2 /= frames2;
+            expect( Math.round( average2 / average1 ) ).toBe( 2 );
         });
     });
 
-    // has correct dimensions during setup
+    // has correct dimensions during setup (canvas)
 
-    it( 'has correct dimensions during setup', function() {
+    it( 'has correct dimensions during setup (canvas)', function() {
 
         sketch = Sketch.create({
             type: Sketch.CANVAS,
-            fullscreen: true,
-            setup: function() {
-                var bounds = this.element.getBoundingClientRect();
-                expect( this.width ).toBe( window.innerWidth );
-                expect( this.height ).toBe( window.innerHeight );
-                expect( bounds.width ).toBe( window.innerWidth );
-                expect( bounds.height ).toBe( window.innerHeight );
-            }
+            fullscreen: true
         });
 
-        sketch.destroy();
+        var bounds = sketch.element.getBoundingClientRect();
+        expect( sketch.width ).toBe( window.innerWidth );
+        expect( sketch.height ).toBe( window.innerHeight );
+        expect( bounds.width ).toBe( window.innerWidth );
+        expect( bounds.height ).toBe( window.innerHeight );
+    });
+
+    // has correct dimensions during setup (webgl)
+
+    it( 'has correct dimensions during setup (webgl)', function() {
 
         sketch = Sketch.create({
             type: Sketch.WEBGL,
-            fullscreen: true,
-            setup: function() {
-                var bounds = this.element.getBoundingClientRect();
-                expect( this.width ).toBe( window.innerWidth );
-                expect( this.height ).toBe( window.innerHeight );
-                expect( bounds.width ).toBe( window.innerWidth );
-                expect( bounds.height ).toBe( window.innerHeight );
-            }
+            fullscreen: true
         });
 
-        sketch.destroy();
+        var bounds = sketch.element.getBoundingClientRect();
+        expect( sketch.width ).toBe( window.innerWidth );
+        expect( sketch.height ).toBe( window.innerHeight );
+        expect( bounds.width ).toBe( window.innerWidth );
+        expect( bounds.height ).toBe( window.innerHeight );
+    });
+
+    // has correct dimensions during setup (DOM)
+
+    it( 'has correct dimensions during setup (DOM)', function() {
 
         sketch = Sketch.create({
             type: Sketch.DOM,
-            fullscreen: true,
-            setup: function() {
-                var bounds = this.element.getBoundingClientRect();
-                expect( this.width ).toBe( window.innerWidth );
-                expect( this.height ).toBe( window.innerHeight );
-                expect( bounds.width ).toBe( window.innerWidth );
-                expect( bounds.height ).toBe( window.innerHeight );
-            }
+            fullscreen: true
         });
+
+        var bounds = sketch.element.getBoundingClientRect();
+        expect( sketch.width ).toBe( window.innerWidth );
+        expect( sketch.height ).toBe( window.innerHeight );
+        expect( bounds.width ).toBe( window.innerWidth );
+        expect( bounds.height ).toBe( window.innerHeight );
+    });
+
+    // retina dimensions are correct
+
+    it( 'retina dimensions are correct', function() {
+
+        var ratio = window.devicePixelRatio || 1;
+
+        sketch = Sketch.create({
+            retina: true
+        });
+
+        expect( sketch.retina ).toBe( true );
+        expect( sketch.canvas.width ).toBe( sketch.width * ratio );
+        expect( sketch.canvas.height ).toBe( sketch.height * ratio );
     });
 
     // resize fires after setup
