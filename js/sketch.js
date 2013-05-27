@@ -44,6 +44,8 @@ var Sketch = (function() {
     var doc = document;
     var win = window;
 
+    var instances = [];
+
     var defaults = {
 
         fullscreen: true,
@@ -396,8 +398,11 @@ var Sketch = (function() {
         function destroy() {
 
             parent = context.element.parentNode;
+            index = instances.indexOf( context );
 
             if ( parent ) parent.removeChild( context.element );
+            if ( ~index ) instances.splice( index, 1 );
+
             bind( false );
             stop();
         }
@@ -421,6 +426,8 @@ var Sketch = (function() {
             stop: stop
         });
 
+        instances.push( context );
+
         return ( context.autostart && start(), bind( true ), resize(), update(), context );
     }
 
@@ -437,6 +444,8 @@ var Sketch = (function() {
         CANVAS: CANVAS,
         WEBGL: WEBGL,
         DOM: DOM,
+
+        instances: instances,
 
         install: function( context ) {
 
@@ -502,12 +511,12 @@ var Sketch = (function() {
 
                     case DOM:
 
-                        return element;
+                        return element.canvas = element;
                 }
 
             })();
 
-            options.container.appendChild( context.canvas = element );
+            options.container.appendChild( element );
 
             return Sketch.augment( context, options );
         },
