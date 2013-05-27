@@ -473,9 +473,9 @@ describe( 'setup and teardown', function() {
         });
     });
 
-    // has correct dimensions during setup (canvas)
+    // Canvas - has correct dimensions during setup
 
-    it( 'has correct dimensions during setup (canvas)', function() {
+    it( 'Canvas - has correct dimensions during setup', function() {
 
         sketch = Sketch.create({
             type: Sketch.CANVAS,
@@ -489,9 +489,9 @@ describe( 'setup and teardown', function() {
         expect( bounds.height ).toBe( window.innerHeight );
     });
 
-    // has correct dimensions during setup (webgl)
+    // WebGL - has correct dimensions during setup
 
-    it( 'has correct dimensions during setup (webgl)', function() {
+    it( 'WebGL - has correct dimensions during setup', function() {
 
         sketch = Sketch.create({
             type: Sketch.WEBGL,
@@ -505,9 +505,9 @@ describe( 'setup and teardown', function() {
         expect( bounds.height ).toBe( window.innerHeight );
     });
 
-    // has correct dimensions during setup (DOM)
+    // DOM - has correct dimensions during setup
 
-    it( 'has correct dimensions during setup (DOM)', function() {
+    it( 'DOM - has correct dimensions during setup', function() {
 
         sketch = Sketch.create({
             type: Sketch.DOM,
