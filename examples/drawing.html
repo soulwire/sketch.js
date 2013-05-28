@@ -60,13 +60,17 @@
 
                     touch = this.touches[i];
 
-                    this.lineCap = 'round';
-                    this.lineJoin = 'round';
-                    this.fillStyle = this.strokeStyle = COLOURS[ i % COLOURS.length ];
-                    this.lineWidth = radius;
-
-                    // Draw using chained methods
-                    this.beginPath()
+                    this
+                        // Setup multiple properties using a hash
+                        .set({
+                            lineCap: 'round',
+                            lineJoin: 'round',
+                            lineWidth: radius
+                        })
+                        // ...or set one by passing the property name followed by the value
+                        .set( 'fillStyle', this.strokeStyle = COLOURS[ i % COLOURS.length ] )
+                        // Chain function calls together
+                        .beginPath()
                         .moveTo( touch.ox, touch.oy )
                         .lineTo( touch.x, touch.y )
                         .stroke();

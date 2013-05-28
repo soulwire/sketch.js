@@ -107,9 +107,9 @@ var Sketch = (function() {
         };
     }
 
-    function clone( target, chain ) {
+    function clone( target ) {
 
-        var result = chain ? target : {};
+        var result = {};
 
         for ( var key in target ) {
 
@@ -117,12 +117,32 @@ var Sketch = (function() {
 
                 result[ key ] = proxy( target[ key ], target );
 
-            else if ( !chain )
+            else
 
                 result[ key ] = target[ key ];
         }
 
         return result;
+    }
+
+    function chain( target ) {
+
+        extend( target, {
+
+            set: function( key, val ) {
+
+                if ( isString( key ) ) target[ key ] = val;
+                else extend( target, key, true );
+            }
+        });
+
+        for ( var key in target )
+
+            if ( isFunction( target[ key ] ) )
+
+                target[ key ] = proxy( target[ key ], target );
+
+        return target;
     }
 
     /*
@@ -430,6 +450,7 @@ var Sketch = (function() {
     var element, context, Sketch = {
 
         CANVAS: CANVAS,
+        WEB_GL: WEBGL,
         WEBGL: WEBGL,
         DOM: DOM,
 
@@ -513,9 +534,7 @@ var Sketch = (function() {
 
             options = extend( options || {}, defaults );
 
-            if ( options.chain )
-
-                clone( context, true );
+            if ( options.chain ) chain( context );
 
             options.element = context.canvas || context;
             options.element.className += ' sketch';

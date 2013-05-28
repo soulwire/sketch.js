@@ -228,6 +228,17 @@ describe( 'create', function() {
             chain: true
         });
 
+        sketch.set( 'lineWidth', 10 );
+        sketch.set({
+            globalCompositeOperation: 'lighter',
+            globalAlpha: 0.5,
+            lineCap: 'round'
+        });
+
+        expect( sketch.lineWidth ).toBe( 10 );
+        expect( sketch.globalCompositeOperation ).toBe( 'lighter' );
+        expect( sketch.globalAlpha ).toBe( 0.5 );
+        expect( sketch.lineCap ).toBe( 'round' );
         expect( sketch.beginPath() ).toBe( sketch );
         expect( sketch.moveTo(0,0) ).toBe( sketch );
         expect( sketch.lineTo(0,0) ).toBe( sketch );
@@ -235,7 +246,7 @@ describe( 'create', function() {
         expect( sketch.stroke() ).toBe( sketch );
         expect( sketch.fill() ).toBe( sketch );
         expect( sketch.fillRect(0,0,1,1) ).toBe( sketch );
-        expect( sketch.isPointInPath(0,0) ).toBe( false );
+        expect( sketch.isPointInPath(10,10) ).toBe( false );
         expect( sketch.getImageData(0,0,1,1) ).toEqual( jasmine.any( ImageData ) );
     });
 
