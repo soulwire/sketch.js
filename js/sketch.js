@@ -127,7 +127,13 @@ var Sketch = (function() {
 
     function chain( target ) {
 
-        extend( target, {
+        for ( var key in target )
+
+            if ( isFunction( target[ key ] ) )
+
+                target[ key ] = proxy( target[ key ], target );
+
+        return extend( target, {
 
             set: function( key, val ) {
 
@@ -135,14 +141,6 @@ var Sketch = (function() {
                 else extend( target, key, true );
             }
         });
-
-        for ( var key in target )
-
-            if ( isFunction( target[ key ] ) )
-
-                target[ key ] = proxy( target[ key ], target );
-
-        return target;
     }
 
     /*
