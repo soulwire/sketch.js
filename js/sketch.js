@@ -423,6 +423,7 @@ var Sketch = (function() {
     var element, context, Sketch = {
 
         CANVAS: CANVAS,
+        WEB_GL: WEBGL,
         WEBGL: WEBGL,
         DOM: DOM,
 
