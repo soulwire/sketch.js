@@ -219,6 +219,26 @@ describe( 'create', function() {
         expect( typeof context.start ).toBe( 'function' );
     });
 
+    // chaining
+
+    it( 'chaining', function() {
+
+        sketch = Sketch.create({
+            type: Sketch.CANVAS,
+            chain: true
+        });
+
+        expect( sketch.beginPath() ).toBe( sketch );
+        expect( sketch.moveTo(0,0) ).toBe( sketch );
+        expect( sketch.lineTo(0,0) ).toBe( sketch );
+        expect( sketch.closePath() ).toBe( sketch );
+        expect( sketch.stroke() ).toBe( sketch );
+        expect( sketch.fill() ).toBe( sketch );
+        expect( sketch.fillRect(0,0,1,1) ).toBe( sketch );
+        expect( sketch.isPointInPath(0,0) ).toBe( false );
+        expect( sketch.getImageData(0,0,1,1) ).toEqual( jasmine.any( ImageData ) );
+    });
+
 });
 
 describe( 'setup and teardown', function() {

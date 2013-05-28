@@ -33,6 +33,10 @@
             container: document.getElementById( 'container' ),
             autoclear: false,
 
+            // Return the sketch from any methods that would otherwise return `void`.
+            // This allows the chaining of methods (`a().b().c()`) for faster typing.
+            chain: true,
+
             setup: function() {
                 console.log( 'setup' );
             },
@@ -41,8 +45,7 @@
                 radius = 2 + abs( sin( this.millis * 0.003 ) * 50 );
             },
 
-            // Event handlers
-
+            // You can easily query sketch as to whether a certain key is pressed
             keydown: function() {
                 if ( this.keys.C ) this.clear();
             },
@@ -62,10 +65,11 @@
                     this.fillStyle = this.strokeStyle = COLOURS[ i % COLOURS.length ];
                     this.lineWidth = radius;
 
-                    this.beginPath();
-                    this.moveTo( touch.ox, touch.oy );
-                    this.lineTo( touch.x, touch.y );
-                    this.stroke();
+                    // Draw using chained methods
+                    this.beginPath()
+                        .moveTo( touch.ox, touch.oy )
+                        .lineTo( touch.x, touch.y )
+                        .stroke();
                 }
             }
         });

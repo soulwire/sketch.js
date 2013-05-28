@@ -36,6 +36,7 @@ var Sketch = (function() {
         interval: 1,
         globals: true,
         retina: false,
+        chain: false,
         type: CANVAS
     };
 
@@ -101,26 +102,27 @@ var Sketch = (function() {
 
         return function() {
 
-            method.apply( context, arguments );
+            var result = method.apply( context, arguments );
+            return result === void 0 ? context : result;
         };
     }
 
-    function clone( target ) {
+    function clone( target, chain ) {
 
-        var object = {};
+        var result = chain ? target : {};
 
         for ( var key in target ) {
 
             if ( isFunction( target[ key ] ) )
 
-                object[ key ] = proxy( target[ key ], target );
+                result[ key ] = proxy( target[ key ], target );
 
-            else
+            else if ( !chain )
 
-                object[ key ] = target[ key ];
+                result[ key ] = target[ key ];
         }
 
-        return object;
+        return result;
     }
 
     /*
@@ -388,7 +390,7 @@ var Sketch = (function() {
             stop();
         }
 
-        extend( context, {
+        instances.push( extend( context, {
 
             touches: touches,
             mouse: mouse,
@@ -405,11 +407,16 @@ var Sketch = (function() {
             clear: clear,
             start: start,
             stop: stop
-        });
 
-        instances.push( context );
+        }));
 
-        return ( context.autostart && start(), bind( true ), resize(), update(), context );
+        return (
+            context.autostart && start(),
+            bind( true ),
+            resize(),
+            update(),
+            context
+        );
     }
 
     /*
@@ -505,6 +512,10 @@ var Sketch = (function() {
         augment: function( context, options ) {
 
             options = extend( options || {}, defaults );
+
+            if ( options.chain )
+
+                clone( context, true );
 
             options.element = context.canvas || context;
             options.element.className += ' sketch';
