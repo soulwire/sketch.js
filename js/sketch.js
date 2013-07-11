@@ -498,7 +498,7 @@ var Sketch = (function() {
 
             })();
 
-            options.container.appendChild( element );
+            ( options.container || doc.body ).appendChild( element );
 
             return Sketch.augment( context, options );
         },
