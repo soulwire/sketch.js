@@ -538,7 +538,7 @@ var Sketch = (function() {
     for ( var i = 0; i < vendors.length && !rAF; i++ ) {
 
         rAF = scope[ vendors[ i ] + 'Request' + a ];
-        cAF = scope[ vendors[ i ] + 'Cancel' + b ];
+        cAF = scope[ vendors[ i ] + 'Cancel' + a ];
     }
 
     scope[ b ] = rAF = rAF || function( callback ) {
