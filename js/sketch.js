@@ -90,7 +90,7 @@ var Sketch = (function() {
 
         for ( var key in source )
 
-            if ( overwrite || !target.hasOwnProperty( key ) )
+            if ( overwrite || !( key in target ) )
 
                 target[ key ] = source[ key ];
 
