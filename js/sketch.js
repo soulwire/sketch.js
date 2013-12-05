@@ -148,6 +148,11 @@ var Sketch = (function() {
             dx: 0.0, dy: 0.0
         };
 
+		var center = {
+			x: context.width / 2,
+			y: context.height / 2
+		};
+
         var eventMap = [
 
             context.element,
@@ -248,6 +253,9 @@ var Sketch = (function() {
 
                 context.scale( ratio, ratio );
             }
+
+            context.center.x = context.width / 2;
+            context.center.y = context.height / 2;
 
             if ( setup ) trigger( context.resize );
         }
@@ -393,6 +401,7 @@ var Sketch = (function() {
             touches: touches,
             mouse: mouse,
             keys: keys,
+            center: center,
 
             dragging: false,
             running: false,
