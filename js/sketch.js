@@ -133,7 +133,7 @@ var Sketch = (function() {
 
     function constructor( context ) {
 
-        var request, handler, target, parent, bounds, index, suffix, clock, node, copy, type, key, val, min, max;
+        var request, handler, target, parent, bounds, index, suffix, clock, node, copy, type, key, val, min, max, w, h;
 
         var counter = 0;
         var touches = [];
@@ -229,25 +229,33 @@ var Sketch = (function() {
             target = isDiv ? context.style : context.canvas;
             suffix = isDiv ? 'px' : '';
 
+            w = context.width;
+            h = context.height;
+
             if ( context.fullscreen ) {
 
-                context.height = win.innerHeight;
-                context.width = win.innerWidth;
+                h = context.height = win.innerHeight;
+                w = context.width = win.innerWidth;
             }
-
-            target.height = context.height + suffix;
-            target.width = context.width + suffix;
 
             if ( context.retina && is2D && ratio ) {
 
-                target.height = context.height * ratio;
-                target.width = context.width * ratio;
+                target.style.height = h + 'px';
+                target.style.width = w + 'px';
 
-                target.style.height = context.height + 'px';
-                target.style.width = context.width + 'px';
+                w *= ratio;
+                h *= ratio;
 
                 context.scale( ratio, ratio );
             }
+
+            if ( target.height !== h )
+
+                target.height = h + suffix;
+            
+            if ( target.width !== w )
+
+                target.width = w + suffix;
 
             if ( setup ) trigger( context.resize );
         }
