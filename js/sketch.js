@@ -137,6 +137,7 @@ var Sketch = (function() {
 
         var counter = 0;
         var touches = [];
+        var resized = false;
         var setup = false;
         var ratio = win.devicePixelRatio;
         var isDiv = context.type == DOM;
@@ -203,7 +204,11 @@ var Sketch = (function() {
 
                 trigger( context.setup );
                 setup = isFunction( context.setup );
+            }
+
+            if ( !resized ) {
                 trigger( context.resize );
+                resized = isFunction( context.resize );
             }
 
             if ( context.running && !counter ) {

@@ -319,6 +319,23 @@ describe( 'setup and teardown', function() {
         });
     });
 
+    // resize only fires once if setup not specified
+
+    it( 'resize only fires once if setup not specified', function() {
+
+        var resizes = 0;
+
+        sketch = Sketch.create({
+            resize: function() { resizes++; }
+        });
+
+        waits( 500 );
+
+        runs(function() {
+            expect( resizes ).toBe( 1 );
+        });
+    });
+
     // autostart false runs setup but not update
 
     it( 'autostart false runs setup but not update', function() {
