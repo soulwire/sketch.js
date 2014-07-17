@@ -157,6 +157,8 @@ var Sketch = (function() {
                 pointer, 'mousemove', 'touchmove',
                 pointer, 'mouseup', 'touchend',
                 pointer, 'click',
+                pointer, 'mouseout',
+                pointer, 'mouseover',
 
             doc,
 
@@ -269,8 +271,8 @@ var Sketch = (function() {
 
             bounds = target.getBoundingClientRect();
 
-            touch.x = touch.pageX - bounds.left - win.scrollX;
-            touch.y = touch.pageY - bounds.top - win.scrollY;
+            touch.x = touch.pageX - bounds.left - (win.scrollX || win.pageXOffset);
+            touch.y = touch.pageY - bounds.top - (win.scrollY || win.pageYOffset);
 
             return touch;
         }
