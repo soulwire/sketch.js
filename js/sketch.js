@@ -604,7 +604,7 @@
 
         return Sketch;
 
-})(window, document);
+    })(window, document);
 
 
     return Sketch;
