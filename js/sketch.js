@@ -12,7 +12,7 @@
     } else if (typeof define === 'function' && define.amd) {
 
         // AMD
-        define(factory);
+        define(function() { return factory(root, root.document); });
 
     } else {
 
