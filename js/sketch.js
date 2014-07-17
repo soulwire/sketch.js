@@ -157,6 +157,8 @@ var Sketch = (function() {
                 pointer, 'mousemove', 'touchmove',
                 pointer, 'mouseup', 'touchend',
                 pointer, 'click',
+                pointer, 'mouseout',
+                pointer, 'mouseover',
 
             doc,
 
