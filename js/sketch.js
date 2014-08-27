@@ -157,7 +157,7 @@
         var touches = [];
         var resized = false;
         var setup = false;
-        var ratio = win.devicePixelRatio;
+        var ratio = win.devicePixelRatio || 1;
         var isDiv = context.type == DOM;
         var is2D = context.type == CANVAS;
 
@@ -239,11 +239,27 @@
 
                 trigger( context.update );
 
-                if ( context.autoclear && is2D )
+                // Pre draw
 
-                    context.clear();
+                if ( is2D ) {
+
+                    if ( context.autoclear )
+
+                        context.clear();
+
+                    context.save();
+                    context.scale( ratio, ratio );
+                }
+
+                // Draw
 
                 trigger( context.draw );
+                
+                // Post draw
+
+                if ( is2D )
+
+                    context.restore();
             }
 
             counter = ++counter % context.interval;
@@ -270,8 +286,6 @@
 
                 w *= ratio;
                 h *= ratio;
-
-                context.scale( ratio, ratio );
             }
 
             if ( target.height !== h )
