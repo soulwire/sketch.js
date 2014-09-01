@@ -243,12 +243,15 @@
 
                 if ( is2D ) {
 
+                    if ( context.retina ) {
+
+                        context.save();
+                        context.scale( ratio, ratio );
+                    }
+
                     if ( context.autoclear )
 
                         context.clear();
-
-                    context.save();
-                    context.scale( ratio, ratio );
                 }
 
                 // Draw
@@ -257,7 +260,7 @@
                 
                 // Post draw
 
-                if ( is2D )
+                if ( is2D && context.retina )
 
                     context.restore();
             }
