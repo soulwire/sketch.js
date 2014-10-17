@@ -1,0 +1,26 @@
+{
+  "name": "sketch.js",
+  "description": "sketch.js lets you get straight to the fun parts of creative coding, without ever having to worry about shims or boilerplate code.",
+  "version": "1.1",
+  "license": "MIT",
+  "homepage": "http://soulwire.github.io/sketch.js/",
+  "authors": [
+    "Justin Windle <justin@soulwire.co.uk>"
+  ],
+  "main": [
+    "js/sketch.js"
+  ],
+  "ignore": [
+    "**/.*",
+    "tests",
+    "examples",
+    "*.md",
+    "*.html"
+  ],
+  "keywords": [
+    "animation",
+    "canvas",
+    "javascript",
+    "library"
+  ]
+}
