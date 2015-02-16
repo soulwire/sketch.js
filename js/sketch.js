@@ -6,20 +6,20 @@
     if ( typeof exports === 'object' ) {
 
         // CommonJS like
-        module.exports = factory(root, root.document);
+        module.exports = factory(root);
 
     } else if ( typeof define === 'function' && define.amd ) {
 
         // AMD
-        define( function() { return factory( root, root.document ); });
+        define( function() { return factory(root); });
 
     } else {
 
         // Browser global
-        root.Sketch = factory( root, root.document );
+        root.Sketch = factory(root);
     }
 
-}( this, function ( window, document ) {
+}( this, function (win) {
 
     "use strict";
 
@@ -39,18 +39,14 @@
     var WEBGL = 'webgl';
     var DOM = 'dom';
 
-    var doc = document;
-    var win = window;
-
     var instances = [];
 
     var defaults = {
-
         fullscreen: true,
         autostart: true,
         autoclear: true,
         autopause: true,
-        container: doc.body,
+        container: false,
         interval: 1,
         globals: true,
         retina: false,
@@ -178,7 +174,7 @@
                 pointer, 'mouseout',
                 pointer, 'mouseover',
 
-            doc,
+            win.document,
 
                 keypress, 'keydown', 'keyup',
 
@@ -527,7 +523,7 @@
 
             if ( options.globals ) Sketch.install( self );
 
-            element = options.element = options.element || doc.createElement( options.type === DOM ? 'div' : 'canvas' );
+            element = options.element = options.element || win.document.createElement( options.type === DOM ? 'div' : 'canvas' );
 
             context = options.context = options.context || (function() {
 
@@ -548,7 +544,7 @@
 
             })();
 
-            ( options.container || doc.body ).appendChild( element );
+            ( options.container || win.document.body ).appendChild( element );
 
             return Sketch.augment( context, options );
         },
