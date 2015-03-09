@@ -1,7 +1,25 @@
 
 /* Copyright (C) 2013 Justin Windle, http://soulwire.co.uk */
 
-var Sketch = (function() {
+(function ( root, factory ) {
+    
+    if ( typeof exports === 'object' ) {
+
+        // CommonJS like
+        module.exports = factory(root, root.document);
+
+    } else if ( typeof define === 'function' && define.amd ) {
+
+        // AMD
+        define( function() { return factory( root, root.document ); });
+
+    } else {
+
+        // Browser global
+        root.Sketch = factory( root, root.document );
+    }
+
+}( this, function ( window, document ) {
 
     "use strict";
 
@@ -133,12 +151,13 @@ var Sketch = (function() {
 
     function constructor( context ) {
 
-        var request, handler, target, parent, bounds, index, suffix, clock, node, copy, type, key, val, min, max;
+        var request, handler, target, parent, bounds, index, suffix, clock, node, copy, type, key, val, min, max, w, h;
 
         var counter = 0;
         var touches = [];
+        var resized = false;
         var setup = false;
-        var ratio = win.devicePixelRatio;
+        var ratio = win.devicePixelRatio || 1;
         var isDiv = context.type == DOM;
         var is2D = context.type == CANVAS;
 
@@ -156,6 +175,8 @@ var Sketch = (function() {
                 pointer, 'mousemove', 'touchmove',
                 pointer, 'mouseup', 'touchend',
                 pointer, 'click',
+                pointer, 'mouseout',
+                pointer, 'mouseover',
 
             doc,
 
@@ -203,7 +224,11 @@ var Sketch = (function() {
 
                 trigger( context.setup );
                 setup = isFunction( context.setup );
+            }
+
+            if ( !resized ) {
                 trigger( context.resize );
+                resized = isFunction( context.resize );
             }
 
             if ( context.running && !counter ) {
@@ -214,11 +239,30 @@ var Sketch = (function() {
 
                 trigger( context.update );
 
-                if ( context.autoclear && is2D )
+                // Pre draw
 
-                    context.clear();
+                if ( is2D ) {
+
+                    if ( context.retina ) {
+
+                        context.save();
+                        context.scale( ratio, ratio );
+                    }
+
+                    if ( context.autoclear )
+
+                        context.clear();
+                }
+
+                // Draw
 
                 trigger( context.draw );
+                
+                // Post draw
+
+                if ( is2D && context.retina )
+
+                    context.restore();
             }
 
             counter = ++counter % context.interval;
@@ -229,25 +273,31 @@ var Sketch = (function() {
             target = isDiv ? context.style : context.canvas;
             suffix = isDiv ? 'px' : '';
 
+            w = context.width;
+            h = context.height;
+
             if ( context.fullscreen ) {
 
-                context.height = win.innerHeight;
-                context.width = win.innerWidth;
+                h = context.height = win.innerHeight;
+                w = context.width = win.innerWidth;
             }
-
-            target.height = context.height + suffix;
-            target.width = context.width + suffix;
 
             if ( context.retina && is2D && ratio ) {
 
-                target.height = context.height * ratio;
-                target.width = context.width * ratio;
+                target.style.height = h + 'px';
+                target.style.width = w + 'px';
 
-                target.style.height = context.height + 'px';
-                target.style.width = context.width + 'px';
-
-                context.scale( ratio, ratio );
+                w *= ratio;
+                h *= ratio;
             }
+
+            if ( target.height !== h )
+
+                target.height = h + suffix;
+
+            if ( target.width !== w )
+
+                target.width = w + suffix;
 
             if ( setup ) trigger( context.resize );
         }
@@ -256,8 +306,8 @@ var Sketch = (function() {
 
             bounds = target.getBoundingClientRect();
 
-            touch.x = touch.pageX - bounds.left - win.scrollX;
-            touch.y = touch.pageY - bounds.top - win.scrollY;
+            touch.x = touch.pageX - bounds.left - (win.scrollX || win.pageXOffset);
+            touch.y = touch.pageY - bounds.top - (win.scrollY || win.pageYOffset);
 
             return touch;
         }
@@ -567,4 +617,4 @@ var Sketch = (function() {
 
     return Sketch;
 
-})();
+}));
