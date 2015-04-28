@@ -1,0 +1,34 @@
+{
+  "name": "sketch-js",
+  "version": "1.1.0",
+  "description": "Cross-Platform JavaScript Creative Coding Framework",
+  "main": "./js/sketch.js",
+  "directories": {
+    "example": "examples",
+    "test": "tests",
+    "lib": "js"
+  },
+  "scripts": {
+    "test": "echo \"visit ./tests/index.html in browser\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/soulwire/sketch.js.git"
+  },
+  "author": {
+    "name": "Justin Windle",
+    "url": "https://github.com/soulwire"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/soulwire/sketch.js/issues"
+  },
+  "homepage": "https://github.com/soulwire/sketch.js",
+  "keywords": [
+    "sketch",
+    "canvas",
+    "webgl",
+    "2d",
+    "javascript"
+  ]
+}
