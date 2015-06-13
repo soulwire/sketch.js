@@ -19,7 +19,8 @@
         root.Sketch = factory( root, root.document );
     }
 
-}( this, function ( window, document ) {
+}( typeof window !== "undefined" ? window : this, function ( window, document ) {
+
 
     "use strict";
 
