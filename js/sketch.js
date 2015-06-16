@@ -492,7 +492,7 @@
 
                     TWO_PI: M.PI * 2,
                     HALF_PI: M.PI / 2,
-                    QUATER_PI: M.PI / 4,
+                    QUARTER_PI: M.PI / 4,
 
                     random: function( min, max ) {
 
