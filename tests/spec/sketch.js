@@ -575,6 +575,16 @@ describe( 'setup and teardown', function() {
         expect( resized ).toBe( true );
     });
 
+    // resize sets center.x and center.y
+
+    it( 'resize sets center.x and center.y', function() {
+
+        sketch = Sketch.create();
+
+        expect( sketch.center.x ).toBe( sketch.width / 2 );
+        expect( sketch.center.y ).toBe( sketch.height / 2 );
+    });
+
     // custom size
 
     it( 'custom size', function() {
