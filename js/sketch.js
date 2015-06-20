@@ -162,6 +162,11 @@
         var isDiv = context.type == DOM;
         var is2D = context.type == CANVAS;
 
+        var center = {
+            x: 0,
+            y: 0
+        };
+
         var mouse = {
             x:  0.0, y:  0.0,
             ox: 0.0, oy: 0.0,
@@ -299,6 +304,9 @@
             if ( target.width !== w )
 
                 target.width = w + suffix;
+
+            context.center.x = w * 0.5;
+            context.center.y = h * 0.5;
 
             if ( setup ) trigger( context.resize );
         }
@@ -444,6 +452,7 @@
             touches: touches,
             mouse: mouse,
             keys: keys,
+            center: center,
 
             dragging: false,
             running: false,
