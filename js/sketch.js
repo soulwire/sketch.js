@@ -19,7 +19,8 @@
         root.Sketch = factory( root, root.document );
     }
 
-}( this, function ( window, document ) {
+}( typeof window !== "undefined" ? window : this, function ( window, document ) {
+
 
     "use strict";
 
@@ -491,7 +492,7 @@
 
                     TWO_PI: M.PI * 2,
                     HALF_PI: M.PI / 2,
-                    QUATER_PI: M.PI / 4,
+                    QUARTER_PI: M.PI / 4,
 
                     random: function( min, max ) {
 
