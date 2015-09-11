@@ -2,7 +2,7 @@
 /* Copyright (C) 2013 Justin Windle, http://soulwire.co.uk */
 
 (function ( root, factory ) {
-    
+
     if ( typeof exports === 'object' ) {
 
         // CommonJS like
@@ -169,7 +169,7 @@
 
         var eventMap = [
 
-            context.element,
+            context.eventTarget || context.element,
 
                 pointer, 'mousedown', 'touchstart',
                 pointer, 'mousemove', 'touchmove',
@@ -257,7 +257,7 @@
                 // Draw
 
                 trigger( context.draw );
-                
+
                 // Post draw
 
                 if ( is2D && context.retina )
