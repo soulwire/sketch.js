@@ -310,6 +310,13 @@
             touch.x = touch.pageX - bounds.left - (win.scrollX || win.pageXOffset);
             touch.y = touch.pageY - bounds.top - (win.scrollY || win.pageYOffset);
 
+            if ( context.retina && is2D && ratio ) {
+
+                touch.x *= ratio;
+                touch.y *= ratio;
+
+            }
+
             return touch;
         }
 
