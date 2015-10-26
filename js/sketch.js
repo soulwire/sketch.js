@@ -129,6 +129,9 @@
         var object = {};
 
         for ( var key in target ) {
+            
+            if ( key === 'webkitMovementX' || key === 'webkitMovementY' )
+                continue;
 
             if ( isFunction( target[ key ] ) )
 
