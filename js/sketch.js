@@ -207,15 +207,34 @@
 
                 node = eventMap[ index ];
 
+                var retinaScaleWrapper = function (fn) {
+
+                    return function () {
+
+                        context.save();
+                        context.scale( ratio, ratio );
+
+                        var result = fn.apply(this, arguments);
+
+                        context.restore();
+
+                        return result;
+                    };
+                };
+
                 if ( isString( node ) )
 
                     target[ ( on ? 'add' : 'remove' ) + 'EventListener' ].call( target, node, handler, false );
 
-                else if ( isFunction( node ) )
+                else if ( isFunction( node ) ) {
+
+                    if ( is2D && context.retina )
+
+                        node = retinaScaleWrapper( node );
 
                     handler = node;
 
-                else target = node;
+                } else target = node;
             }
         }
 
@@ -241,8 +260,6 @@
                 context.millis += context.dt;
                 context.now = clock;
 
-                trigger( context.update );
-
                 // Pre draw
 
                 if ( is2D ) {
@@ -260,6 +277,7 @@
 
                 // Draw
 
+                trigger( context.update );
                 trigger( context.draw );
 
                 // Post draw
@@ -312,13 +330,6 @@
 
             touch.x = touch.pageX - bounds.left - (win.scrollX || win.pageXOffset);
             touch.y = touch.pageY - bounds.top - (win.scrollY || win.pageYOffset);
-
-            if ( context.retina && is2D && ratio ) {
-
-                touch.x *= ratio;
-                touch.y *= ratio;
-
-            }
 
             return touch;
         }
