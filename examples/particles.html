@@ -104,6 +104,8 @@
         };
 
         demo.spawn = function( x, y ) {
+            
+            var particle, theta, force;
 
             if ( particles.length >= MAX_PARTICLES )
                 pool.push( particles.shift() );
