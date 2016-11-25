@@ -9,6 +9,7 @@
     "lib": "js"
   },
   "scripts": {
+    "build": "uglifyjs js/sketch.js --comments /copy/i -cmo js/sketch.min.js",
     "test": "echo \"visit ./tests/index.html in browser\""
   },
   "repository": {
@@ -30,5 +31,8 @@
     "webgl",
     "2d",
     "javascript"
-  ]
+  ],
+  "devDependencies": {
+    "uglify-js": "^2.7.4"
+  }
 }
