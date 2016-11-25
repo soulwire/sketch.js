@@ -434,7 +434,7 @@
 
       if ( is2D )
 
-        context.clearRect( 0, 0, context.width, context.height );
+        context.clearRect( 0, 0, context.width * ratio, context.height * ratio );
     }
 
     function destroy() {
