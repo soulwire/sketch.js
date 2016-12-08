@@ -410,9 +410,9 @@ describe( 'setup and teardown', function() {
     it( 'clock is working', function() {
 
         var startTime = -1;
-        var clock = window.performance.now();
+        var before = 0;
         var millis = 0;
-        var MOE = 5000;
+        var MOE = 5;
 
         sketch = Sketch.create({
             setup: function() {
@@ -422,7 +422,7 @@ describe( 'setup and teardown', function() {
             update: function() {
 
                 var now = window.performance.now();
-                var dt = now - clock;
+                var dt = (!before) ? 0 : now - before;
                 millis += dt;
 
                 expect( Math.abs( this.st ) ).toBe( startTime );
@@ -430,7 +430,7 @@ describe( 'setup and teardown', function() {
                 expect( Math.abs( this.now - now ) ).toBeLessThan( MOE );
                 expect( Math.abs( this.dt - dt ) ).toBeLessThan( MOE );
 
-                clock = now;
+                before = now;
             }
         });
 
