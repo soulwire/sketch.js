@@ -156,7 +156,8 @@
   function constructor( context ) {
 
     var request, handler, target, parent, bounds, index, suffix, node, copy, type, key, val, min, max, w, h;
-
+    
+    var before = 0;    
     var counter = 0;
     var touches = [];
     var resized = false;
@@ -219,27 +220,24 @@
       }
     }
 
-    function update() {
+    function update( now ) {
 
       cAF( request );
       request = rAF( update );
-
-      if ( !setup ) {
-
-        trigger( context.setup );
-        setup = isFunction( context.setup );
-      }
 
       if ( !resized ) {
         trigger( context.resize );
         resized = isFunction( context.resize );
       }
 
+      if ( !setup ) triggerSetup();
+
       if ( context.running && !counter ) {
 
-        context.dt = window.performance.now() - context.now;
+        context.dt = (!before) ? 0 : window.performance.now() - before;
         context.millis += context.dt;
-        context.now = window.performance.now();
+        before = now;
+        context.now = now;
 
         trigger( context.update );
 
@@ -412,16 +410,43 @@
       trigger( context[ event.type ], event );
     }
 
+    function triggerSetup() {
+
+      trigger( context.setup );
+      setup = isFunction( context.setup );
+    }
+
+    function init() {
+
+      bind( true );
+
+      triggerSetup();
+
+      resize();
+
+      if (context.autostart) start();      
+    }
+
     // Public API
 
     function start() {
+      
+      if ( context.running ) return;
 
-      context.now = window.performance.now();
       context.running = true;
+
+      request = rAF( update );
     }
 
     function stop() {
 
+      if ( !context.running ) return;
+
+      cAF( request );
+
+      before = 0;
+      context.dt = -1;
+      context.now = -1;
       context.running = false;
     }
 
@@ -458,8 +483,8 @@
       dragging: false,
       running: false,
       millis: 0,
-      now: NaN,
-      dt: NaN,
+      now: -1,
+      dt: -1,
 
       destroy: destroy,
       toggle: toggle,
@@ -470,7 +495,9 @@
 
     instances.push( context );
 
-    return ( context.autostart && start(), bind( true ), resize(), update(), context );
+    init();
+
+    return context;
   }
 
   /*
