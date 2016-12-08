@@ -413,14 +413,14 @@ describe( 'setup and teardown', function() {
 
     it( 'clock is working', function() {
 
-        var clock = +new Date();
+        var clock = window.performance.now();
         var millis = 0;
-        var MOE = 5;
+        var MOE = 5000;
 
         sketch = Sketch.create({
             update: function() {
 
-                var now = +new Date();
+                var now = window.performance.now();
                 var dt = now - clock;
                 millis += dt;
 

@@ -155,7 +155,7 @@
 
   function constructor( context ) {
 
-    var request, handler, target, parent, bounds, index, suffix, clock, node, copy, type, key, val, min, max, w, h;
+    var request, handler, target, parent, bounds, index, suffix, node, copy, type, key, val, min, max, w, h;
 
     var counter = 0;
     var touches = [];
@@ -237,9 +237,9 @@
 
       if ( context.running && !counter ) {
 
-        context.dt = ( clock = +new Date() ) - context.now;
+        context.dt = window.performance.now() - context.now;
         context.millis += context.dt;
-        context.now = clock;
+        context.now = window.performance.now();
 
         trigger( context.update );
 
@@ -416,7 +416,7 @@
 
     function start() {
 
-      context.now = +new Date();
+      context.now = window.performance.now();
       context.running = true;
     }
 
