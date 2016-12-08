@@ -418,6 +418,8 @@
 
     function init() {
 
+      context.st = window.performance.now();
+
       bind( true );
 
       triggerSetup();
