@@ -1,0 +1,22 @@
+sudo: false
+
+os:
+  - linux
+  - osx
+
+language: node_js
+
+node_js:
+  - node
+  - 4
+
+cache:
+  directories:
+    - node_modules
+
+install:
+  - npm i -g npm@latest
+  - npm install
+
+notifications:
+  email: false
