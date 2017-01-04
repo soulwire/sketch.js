@@ -310,7 +310,9 @@ describe( 'setup and teardown', function() {
         for ( var i = 0; i < 100; i++ ) sketch.start();
 
         expect( setups ).toBe( 1 );
-        expect( updates ).toBe( 1 );
+        if (sketch.millis === 0) {
+            expect( updates ).toBe( 0 );
+        }
 
         waitsFor( function() { return updates > 1; }, 'Update failed', 10000 );
 
@@ -373,21 +375,15 @@ describe( 'setup and teardown', function() {
             update: function() { updates++; }
         });
 
-        waitsFor( function() { return updates > 0; }, 'Update failed', 10000 );
+        waitsFor( function() { return updates > 1; }, 'Update failed', 10000 );
 
         runs( sketch.stop );
 
         runs( function() {
-            expect( updates ).toBe( 1 );
+            expect( updates ).toBeGreaterThan( 1 );
         });
 
         runs( sketch.start );
-
-        waitsFor( function() { return updates > 1; }, 'Update failed', 10000 );
-
-        runs( function() {
-            expect( updates ).toBeGreaterThan( 1 );
-        });
 
         runs( function() {
             count = updates;
@@ -413,33 +409,41 @@ describe( 'setup and teardown', function() {
 
     it( 'clock is working', function() {
 
-        var clock = +new Date();
+        var startTime = -1;
+        var before = 0;
         var millis = 0;
         var MOE = 5;
 
         sketch = Sketch.create({
+            setup: function() {
+                expect( this.st ).toBeGreaterThan( 0 );
+                startTime = this.st;                
+            },
             update: function() {
 
-                var now = +new Date();
-                var dt = now - clock;
+                var now = window.performance.now();
+                var dt = (!before) ? 0 : now - before;
                 millis += dt;
 
+                expect( Math.abs( this.st ) ).toBe( startTime );
                 expect( Math.abs( this.millis - millis ) ).toBeLessThan( MOE );
                 expect( Math.abs( this.now - now ) ).toBeLessThan( MOE );
                 expect( Math.abs( this.dt - dt ) ).toBeLessThan( MOE );
 
-                clock = now;
+                before = now;
             }
         });
 
         waits( 1000 );
     });
 
-    // delta times ok after stop/start
+    // clock ok after stop/start
 
-    it( 'delta times ok after stop/start', function() {
+    it( 'clock ok after stop/start', function() {
 
         var updates = 0;
+        var previousMillis = 0;
+        var startTime = 0;
 
         sketch = Sketch.create({
             update: function() {
@@ -447,12 +451,27 @@ describe( 'setup and teardown', function() {
             }
         });
 
-        waitsFor( function() { return updates > 1; }, 'Update never fired', 1000 );
+        expect( sketch.st ).toBeGreaterThan( 0 );
+        startTime = sketch.st;
+
+        waitsFor( function() { return updates > 1 && updates <= 3; }, 'Update never fired', 1000 );
         runs( sketch.stop );
         waits( 500 );
+        runs(function() {
+            expect( sketch.st ).toBe( startTime );
+            expect( sketch.millis ).toBeGreaterThan( 0 );
+            expect( sketch.now ).toBe( -1 );
+            expect( sketch.dt ).toBe( -1 );
+            previousMillis = sketch.millis;
+        });
         runs( sketch.start );
-        waitsFor( function() { return updates > 2; }, 'Update never fired after restart', 1000 );
-        expect( sketch.dt ).toBeLessThan( 100 );
+        waitsFor( function() { return updates > 3 && updates < 6; }, 'Update never fired after restart', 1000 );
+        runs(function() {
+            expect( sketch.st ).toBe( startTime );
+            expect( sketch.millis ).toBeGreaterThan( previousMillis );
+            expect( sketch.now ).toBeGreaterThan( 0 );
+            expect( sketch.dt ).toBeLessThan( 30 );
+        });
     });
 
     // interval is working
