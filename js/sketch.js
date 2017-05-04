@@ -343,7 +343,9 @@
 
     function process( event ) {
 
-      event.preventDefault();
+      if ( event.currentTarget === context.element )
+
+        event.preventDefault();
 
       copy = clone( event );
       copy.originalEvent = event;
