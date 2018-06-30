@@ -13,30 +13,40 @@ declare module "Sketch" {
 declare const Sketch: SketchI;
 
 /**
- * @see \`{@link https://github.com/soulwire/sketch.js/wiki/API }\`
  * declare sketch.js Global Properties
  * These are safely mixed into the window object for quick access, e.g: sin( random( TWO_PI ) ). You can prevent this happening by passing globals:false when calling create and/or add this properties to any object yourself by calling Sketch.install( context )
  */
 
 /**
  * @function random Accepts single values, ranges and Arrays, e.g: random( 10, 20 ) or random( colours )
- *
+ * @param min values / ranges / Arrays
+ * @param max values / ranges /Arrays (not required)
  */
-declare function random(min: number | Array<number>, max?: number): number;
+declare function random(
+  min: number | Array<number | string>,
+  max?: number
+): number;
 /**
- * @function lerp Arguments: min max amount. Interpolate between min and max by the factor amount
- *
+ * @function lerp Interpolate between min and max by the factor amount
+ * @param min
+ * @param max
+ * @param amount
  */
 declare function lerp(min: number, max: number, amount: number): number;
 /**
- * @function map Arguments: num minA maxA minB maxB. Map num from the range minA/maxA to the range minB/maxB
- *
+ * @function map Map num from the range minA/maxA to the range minB/maxB
+ * @param num
+ * @param minA
+ * @param maxA
+ * @param minB
+ * @param maxB
  */
 declare function map(
   num: number,
   minA: number,
+  maxA: number,
   minB: number,
-  max: number
+  maxB: number
 ): number;
 
 declare const PI: Sketch_Math_Constants;
@@ -75,12 +85,14 @@ declare function min(...val: Array<number>): Sketch_Math_Functions_ReturnType;
 interface SketchInstance
   extends Sketch_Instance_Methods,
     Sketch_Instance_Properites,
-    Sketch_Instance_Overridable_Methods {}
+    Sketch_Instance_Overridable_Methods {
+  [propName: string]: any;
+}
 
 interface SketchI extends Sketch_Class_Methods, Sketch_Constants {}
 
-interface Sketch_Math_Constants extends Number {}
-interface Sketch_Math_Functions_ReturnType extends Number {}
+type Sketch_Math_Functions_ReturnType = number;
+type Sketch_Math_Constants = number;
 interface Sketch_Mouse extends Sketch_HandleGesture {}
 interface Sketch_Touch extends Sketch_HandleGesture {}
 
@@ -98,12 +110,12 @@ interface Sketch_Instance_Properites {
    * @param mouse Contains x, y, ox, oy, dx and dy, representing the mouse or primary touch.
    *
    */
-  mouse: Sketch_Mouse;
+  mouse: Array<Sketch_Mouse>;
   /**
    * @param touches List of current touches with same structure as mouse. On the desktop, the 0th element represents the mouse.
    *
    */
-  touches: Sketch_Touch;
+  touches: Array<Sketch_Touch>;
   /**
    * @param dragging Whether the mouse is down / the user is dragging
    *
@@ -154,33 +166,37 @@ interface Sketch_Constants {
    *
    * @param CANVAS Enumeration for the Canvas type
    */
-  CANVAS: Sketch_Options_type;
+  CANVAS: Sketch_Options_type.CANVAS;
 
   /**
    *
    * @param WEBGL Enumeration for the WebGL type
    */
 
-  WEBGL: Sketch_Options_type;
+  WEBGL: Sketch_Options_type.WEBGL;
   /**
    *
    * @param WEB_GL Enumeration for the WebGL type
    */
 
-  WEB_GL: Sketch_Options_type;
+  WEB_GL: Sketch_Options_type.WEBGL;
   /**
    *
    * @param DOM Enumeration for the DOM type
    */
-  DOM: Sketch_Options_type;
+  DOM: Sketch_Options_type.DOM;
   /**
    *
    * @param instances A list of all current Sketch instances
    */
-  instances: SketchI;
+  instances: Array<SketchI>;
 }
 
-declare enum Sketch_Options_type {}
+declare enum Sketch_Options_type {
+  CANVAS = "canvas",
+  WEBGL = "webgl",
+  DOM = "dom"
+}
 
 interface Sketch_Context {}
 interface Sketch_Class_Methods {
@@ -217,6 +233,11 @@ interface Sketch_Options {
   autostart?: boolean;
 
   /**
+   * @param autoclear Default: true Whether to clear the context before each call to draw. Otherwise call clear()
+   */
+  autoclear?: boolean;
+
+  /**
    * @param autopause Default: true Whether to pause the animation on window blur and resume on focus
    */
   autopause?: boolean;
@@ -224,7 +245,7 @@ interface Sketch_Options {
   /**
    * @param container Default: document.body Where to put the sketch context
    */
-  container?: HTMLElement;
+  container?: HTMLElement | null;
 
   /**
    * @param interval interval Default: 1 The update / draw interval (2 will update every 2 frames, etc)
@@ -240,7 +261,7 @@ interface Sketch_Options {
    * @param retina Default: false Resize for best appearance on retina displays. Can be slow due to so many pixels!
    */
 
-  retina?: boolean;
+  retina?: boolean | "auto";
 
   /**
    * @param type Default Sketch.CANVAS Possible values: Sketch.CANVAS, Sketch.WEB_GL and Sketch.DOM
@@ -251,6 +272,8 @@ interface Sketch_Options {
    * @param eventTarget If you want Sketch to bind mouse events to an element other than the Sketch canvas, you can specify that element here
    */
   eventTarget?: HTMLElement;
+
+  [propName: string]: any;
 }
 
 interface Sketch_Instance_Methods {
@@ -283,21 +306,21 @@ interface Sketch_Instance_Overridable_Methods {
   /**
    * Implement these methods on your sketch instance (or pass them to create inside the options hash).
    */
-  setup(): Event;
-  update(): Event;
-  draw(): Event;
-  touchstart(): Event;
-  touchmove(): Event;
-  touchend(): Event;
-  mouseover(): Event;
-  mousedown(): Event;
-  mousemove(): Event;
-  mouseout(): Event;
-  mouseup(): Event;
-  click(): Event;
-  keydown(): Event;
-  keyup(): Event;
-  resize(): Event;
+  setup(): any;
+  update(): any;
+  draw(): any;
+  touchstart(): any;
+  touchmove(): any;
+  touchend(): any;
+  mouseover(): any;
+  mousedown(): any;
+  mousemove(): any;
+  mouseout(): any;
+  mouseup(): any;
+  click(): any;
+  keydown(): any;
+  keyup(): any;
+  resize(): any;
 }
 
 declare enum Sketch_KeyMap {
