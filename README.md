@@ -55,7 +55,17 @@ According to the [API Document](https://github.com/soulwire/sketch.js/wiki/API) 
 So it maybe has some flaws in part... 
 Anyway , it always work better than no DTS.
 
-If you want to use it , you can import it through use <reference path="..."> tag like this:
+How to use it :
+
+you can import it through use <reference path="..."> tag like this:
   ```
     /// <reference path="./sketch.d.ts">
   ```
+  
+Or  use `npm` to install the package which included the `sketch.js` and `sketch.d.ts` .
+
+```
+ npm i @cospie/sketch --save
+```
+
+
