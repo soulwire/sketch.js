@@ -61,11 +61,3 @@ you can import it through use <reference path="..."> tag like this:
   ```
     /// <reference path="./sketch.d.ts">
   ```
-  
-Or  use `npm` to install the package which included the `sketch.js` and `sketch.d.ts` .
-
-```
- npm i @cospie/sketch --save
-```
-
-
