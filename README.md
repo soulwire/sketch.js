@@ -48,3 +48,16 @@ Sketch.create({
 ### The Rest
 
 For more information, check out the [getting started guide](https://github.com/soulwire/sketch.js/wiki/Getting-Started), the [API](https://github.com/soulwire/sketch.js/wiki/API), the many examples in the [showcase](http://soulwire.github.com/sketch.js/) and the full [source](https://github.com/soulwire/sketch.js/blob/master/js/sketch.js).
+
+### Support TypeScript
+
+According to the [API Document](https://github.com/soulwire/sketch.js/wiki/API) create the basic DTS File :`sketch.d.ts` . 
+So it maybe has some flaws in part... 
+Anyway , it always work better than no DTS.
+
+How to use it :
+
+you can import it through use <reference path="..."> tag like this:
+  ```
+    /// <reference path="./sketch.d.ts">
+  ```
