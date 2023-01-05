@@ -9,7 +9,7 @@ A tiny (~2kb gzipped) platform for JavaScript creative coding.
 <a target="_blank" href="http://soulwire.github.com/Muscular-Hydrostats/"><img width="24.5%" src="http://soulwire.github.io/sketch.js/examples/img/tentacles.jpg"></a>
 </p>
 
-A few examples from the [showcase](http://soulwire.github.com/sketch.js/)
+A few examples from the [showcase](http://soulwire.github.io/sketch.js/)
 
 ### Start Coding Faster
 
